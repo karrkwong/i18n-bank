@@ -1,54 +1,58 @@
 {
-  "version": "1.0.0",
+  "version": "1.1.0",
   "project": "i18n_BANK",
   "last_updated": "2026-09-17",
+  "detection_policy": {
+    "typical_pattern_role": "candidate_hint",
+    "note": "typical_pattern hits are machine pre-screen candidates only. Every hit must be confirmed against the defect code's judgment criteria (references/specification.md section 4) before being reported; discard false positives."
+  },
   "defect_types": [
     {
       "code": "TRUNCATION",
       "name": "界面截断",
-      "severity": "HIGH",
+      "default_severity": "HIGH",
       "description": "文字超长被系统以省略号（...）截断或超出渲染视口被裁剪，丢失关键信息。",
-      "typical_pattern": "(…|\\.{3}|cut-off)"
+      "typical_pattern": "(…|\\.{3})"
     },
     {
       "code": "LINE_BREAK",
       "name": "不良折行/断词",
-      "severity": "MEDIUM",
-      "description": "单词被非正常音节截断跨行，或不必要的折行破坏了网格对称与卡片对齐。",
-      "typical_pattern": "([a-zA-Z]+-\\n[a-zA-Z]+|\\b[a-zA-Z]{1,4}\\b$)"
+      "default_severity": "MEDIUM",
+      "description": "单词在非连字符处被物理拆裂跨行，或不必要的折行破坏了网格对称与卡片对齐。",
+      "typical_pattern": "([A-Za-z]{2,}\\n[a-z]{2,})"
     },
     {
       "code": "MIXED_LANG",
       "name": "语言混排/漏翻",
-      "severity": "HIGH",
-      "description": "目标语言界面出现残留的未翻译中文、非预期语种夹杂或拼装混排。",
-      "typical_pattern": "([\\u4e00-\\u9fa5]+[a-zA-Z]+|[a-zA-Z]+[\\u4e00-\\u9fa5]+)"
+      "default_severity": "HIGH",
+      "description": "目标语言界面出现残留的未翻译源文本、非预期语种夹杂或拼装混排，覆盖中日韩文与泰文等非拉丁文字；马来语/印尼语等拉丁字母语种须用源串残留比对策略。",
+      "typical_pattern": "([\\u4e00-\\u9fa5\\u0E00-\\u0E7F]\\s*[a-zA-Z]|[a-zA-Z]\\s*[\\u4e00-\\u9fa5\\u0E00-\\u0E7F])"
     },
     {
       "code": "REDUNDANCY",
       "name": "文案冗余/未精炼",
-      "severity": "MEDIUM",
+      "default_severity": "MEDIUM",
       "description": "空间受限组件未遵循语境省略原则，重复父级分类名称或带有泛化冗余后缀（如 Service, Management）。",
       "typical_pattern": "(Card Application|Card Activation|Local Transfer|Payroll Service)"
     },
     {
       "code": "FORMAT_GRAMMAR",
       "name": "格式与语法错误",
-      "severity": "MEDIUM",
+      "default_severity": "MEDIUM",
       "description": "包含英文单复数错误、冒号后缺少空格、全半角标点混用、大小写不一致等规范问题。",
-      "typical_pattern": "(1\\s+[a-zA-Z]+s\\b|:\\S)"
+      "typical_pattern": "(1\\s+[a-zA-Z]+s\\b|(?<![0-9]):[A-Za-z])"
     },
     {
       "code": "COMPLIANCE",
       "name": "术语/合规不符",
-      "severity": "HIGH",
+      "default_severity": "HIGH",
       "description": "未采用目标国家央行法定术语、违背行业标准命名、或存在利息/收益不当披露等合规隐患。",
       "typical_pattern": "(Quick Pay|Fast Pay|Installment Apply|Guaranteed Return)"
     },
     {
       "code": "PLACEHOLDER",
       "name": "变量占位异常",
-      "severity": "HIGH",
+      "default_severity": "HIGH",
       "description": "动态模板占位符未渲染直接外露，或因硬编码语序拼接导致目标语言语法颠倒。",
       "typical_pattern": "(\\{[a-zA-Z0-9_]+\\}|%[sd]|\\$\\{.*?\\})"
     }
@@ -85,6 +89,7 @@
     "grid_tile": {
       "max_lines": 2,
       "max_en_chars": 12,
+      "max_en_chars_per_line": 6,
       "max_sea_chars": 16,
       "style": "Single verb preferred, context omitted"
     },
@@ -111,6 +116,12 @@
       "max_en_chars": 24,
       "max_sea_chars": 32,
       "style": "Full business concept permitted"
+    },
+    "dialog_toast": {
+      "max_lines": 2,
+      "max_en_chars": 60,
+      "max_sea_chars": 90,
+      "style": "Complete sentence, standard punctuation, placeholder rules"
     }
   }
 }
