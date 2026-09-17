@@ -1,5 +1,7 @@
 # Banking App 界面国际化走查与本地化标准规范 (i18n_BANK Specification)
 
+> **数值单一事实源**：缺陷码、合规层级与排版预算的权威数值以 [`references/rules.json`](rules.json) 为准，术语决策以 [`references/termbase.csv`](termbase.csv) 为准。本文件阐述判定逻辑与依据；若数值与 rules.json 不一致，以 rules.json 为准并视为本文件缺陷。
+
 ## 1. 概述与适用范围
 本规范为银行及金融类 App（包括移动端 iOS/Android、H5 及小程序）界面文案走查（LQA - Localization Quality Assurance）与多语言翻译的权威基准。本规范直接指导 `i18n_BANK` 走查流程，确保金融专业度、监管合规性、前端工程可用性与本地化用户体验的高度平衡。
 
