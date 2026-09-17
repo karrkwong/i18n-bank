@@ -8,7 +8,8 @@ Validates asset integrity before any change is released:
                      governance fields (status, review_date, source_url),
                      cross-entry preferred/forbidden conflicts
   2. rules.json    — schema closure (defect codes, compliance levels),
-                     rule_id discipline (R-DEF / R-LAY / R-GEN),
+                     rule_id discipline (R-DEF / R-LAY / R-GEN / R-FMT / R-MET),
+                     format_rules / format_conventions / metrics schemas,
                      governance thresholds, regex regression suite
   3. spec <-> json — layout budget matrix consistency (both directions)
   4. governance    — review freshness (stale warning / MANDATORY re-verify);
@@ -46,8 +47,9 @@ SCOPE_VALUES = {
     "GLOBAL", "REGIONAL_SEA", "LOCAL_SG", "LOCAL_MY", "LOCAL_HK", "LOCAL_TH", "LOCAL_ID",
 }
 STATUS_VALUES = {"ACTIVE", "RETIRED"}
+MARKETS = {"SG", "MY", "HK", "TH", "ID"}
 
-RULE_ID_RE = re.compile(r"R-(?:DEF|LAY|GEN)-\d{3}")
+RULE_ID_RE = re.compile(r"R-(?:DEF|LAY|GEN|FMT|MET)-\d{3}")
 # A cited entry ID must exist — unless it is a gap proposal "(proposed)".
 FIN_CITED_RE = re.compile(r"FIN-[A-Z]{3}-\d{3}(?!\s*\(proposed\))")
 FIN_PROPOSED_RE = re.compile(r"(FIN-[A-Z]{3}-\d{3})\s*\(proposed\)")
@@ -262,6 +264,52 @@ def check_rules_json():
                 err(f"rules.json: duplicate rule_id '{rid}'")
             rule_ids.add(rid)
 
+    for fr in rules.get("format_rules", []):
+        rid = fr.get("rule_id", "")
+        if not re.fullmatch(r"R-FMT-\d{3}", rid):
+            err(f"rules.json format_rules: rule_id missing or malformed '{rid}' (expected R-FMT-###)")
+        if rid in rule_ids:
+            err(f"rules.json: duplicate rule_id '{rid}'")
+        rule_ids.add(rid)
+        if fr.get("market") not in MARKETS:
+            err(f"rules.json format_rules {rid}: unknown market '{fr.get('market')}' (expected one of {sorted(MARKETS)})")
+        if not re.fullmatch(r"[A-Z]{3}", fr.get("currency_code", "")):
+            err(f"rules.json format_rules {rid}: currency_code must be an ISO 4217 alpha code")
+        for field in ("currency_symbol", "date_format", "thousands_sep", "decimal_sep"):
+            if not str(fr.get(field, "")).strip():
+                err(f"rules.json format_rules {rid}: missing '{field}'")
+        ts, ds = fr.get("thousands_sep", ""), fr.get("decimal_sep", "")
+        if ts and ds and (len(ts) != 1 or len(ds) != 1 or ts == ds):
+            err(f"rules.json format_rules {rid}: thousands_sep/decimal_sep must be distinct single characters")
+
+    for fc in rules.get("format_conventions", []):
+        rid = fc.get("rule_id", "")
+        if not re.fullmatch(r"R-FMT-\d{3}", rid):
+            err(f"rules.json format_conventions: rule_id missing or malformed '{rid}' (expected R-FMT-###)")
+        if rid in rule_ids:
+            err(f"rules.json: duplicate rule_id '{rid}'")
+        if not str(fc.get("statement", "")).strip():
+            err(f"rules.json format_conventions {rid or '<no-id>'}: missing 'statement'")
+        rule_ids.add(rid)
+
+    met_keys = set()
+    for mt in rules.get("metrics", []):
+        rid = mt.get("rule_id", "")
+        if not re.fullmatch(r"R-MET-\d{3}", rid):
+            err(f"rules.json metrics: rule_id missing or malformed '{rid}' (expected R-MET-###)")
+        if rid in rule_ids:
+            err(f"rules.json: duplicate rule_id '{rid}'")
+        rule_ids.add(rid)
+        key = str(mt.get("key", "")).strip()
+        if not key:
+            err(f"rules.json metrics {rid}: missing 'key'")
+        if key in met_keys:
+            err(f"rules.json metrics: duplicate key '{key}'")
+        met_keys.add(key)
+        for field in ("name", "formula", "unit"):
+            if not str(mt.get(field, "")).strip():
+                err(f"rules.json metrics {rid}: missing '{field}'")
+
     for d in rules.get("defect_types", []):
         pattern = d.get("typical_pattern", "")
         try:
@@ -379,7 +427,9 @@ def main():
         print(f"defect codes: {len(rules.get('defect_types', []))} · "
               f"compliance levels: {len(rules.get('compliance_levels', {}))} · "
               f"layout components: {len(rules.get('layout_constraints', {}))}")
-    print(f"rule IDs defined: {len(rule_ids)} (R-DEF / R-LAY / R-GEN)")
+        print(f"format rules: {len(rules.get('format_rules', [])) + len(rules.get('format_conventions', []))} · "
+              f"metrics: {len(rules.get('metrics', []))}")
+    print(f"rule IDs defined: {len(rule_ids)} (R-DEF / R-LAY / R-GEN / R-FMT / R-MET)")
     print()
     if warnings:
         print(f"Warnings ({len(warnings)}):")

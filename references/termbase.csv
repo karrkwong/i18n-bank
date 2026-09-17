@@ -35,3 +35,15 @@ FIN-COM-001,GLOBAL,CommonUI,Navigation,返回上一页交互,Back,,Return Back; 
 FIN-COM-002,GLOBAL,CommonUI,CTA Button,确认当前操作或提交表单,Confirm,Submit,Make Sure; OK,确认,確認,GENERAL,标准移动端交互规范,,ACTIVE,2026-09-18,
 FIN-COM-003,GLOBAL,CommonUI,CTA Button,放弃或取消当前流程,Cancel,Dismiss,Give Up,取消,取消,GENERAL,标准移动端交互规范,,ACTIVE,2026-09-18,
 FIN-COM-004,GLOBAL,CommonUI,List Row / Action,查看完整交易或协议详情,Details,View Details,More Details,详情,詳情,GENERAL,标准移动端交互规范,,ACTIVE,2026-09-18,
+FIN-COM-005,GLOBAL,CommonUI,List Row / Action,常用收款人或功能收藏,Favourite,Favourites,Favorite,收藏,收藏,GENERAL,英式英语拼写标准 (en-GB),,ACTIVE,2026-09-18,Favorite 为美式拼写，本市场体系统一英式拼写 (R-GEN-003)
+FIN-COM-006,GLOBAL,CommonUI,List Title / Menu,交易或操作记录列表,History,Transaction History,Transaction Management,记录,記錄,GENERAL,UI/UX 语境省略原则 (在 Transactions 分区下写 History),,ACTIVE,2026-09-18,Transactions 等父级分区下用 History，不重复 Transaction 前缀 (R-GEN-002)
+FIN-BIL-001,LOCAL_SG,Bills,Recurring Direct Debit,新加坡银行间直接扣款付费计划,GIRO,,,GIRO,GIRO,MANDATORY,ABS (Association of Banks in Singapore) GIRO Scheme,https://abs.org.sg,ACTIVE,2026-09-18,GIRO 为新加坡直接扣款服务的计划名称，界面保留原词不译
+FIN-BIL-002,LOCAL_SG,Bills,Payment Channel,新加坡账单缴费与支付服务网络,AXS,,,AXS,AXS,STANDARD,AXS Network (Singapore),https://www.axs.com.sg,ACTIVE,2026-09-18,AXS 为新加坡本地缴费渠道专有名称，不译
+FIN-BIL-003,REGIONAL_SEA,Bills,Grid Tile / Tab Bar,账单缴费功能入口,Bills,Pay Bills,Bill Payment Service,缴费,繳費,GENERAL,UI/UX 语境省略原则 (在 Payments 分区下写 Bills),,ACTIVE,2026-09-18,宫格/Tab 用 Bills；CTA 按钮可用祈使式 Pay Bills (R-GEN-002)
+FIN-BIL-004,REGIONAL_SEA,Bills,Form Label,账单或还款的到期日期,Due Date,Payment Due Date,,到期日,到期日,GENERAL,银行业务通用术语,,ACTIVE,2026-09-18,日期格式遵循 R-FMT 各市场规则
+FIN-BIL-005,REGIONAL_SEA,Bills,Service,周期性自动扣款安排,Recurring Payment,Auto Debit,,自动扣款,自動扣款,STANDARD,国际银行业务通用术语,,ACTIVE,2026-09-18,新加坡市场的法定计划名为 GIRO（见 FIN-BIL-001），通用场景用 Recurring Payment
+FIN-BIL-006,LOCAL_HK,Bills,Service,香港银行直接扣款服务,Autopay,Direct Debit,,自动转账,自動轉賬,STANDARD,香港银行业通用服务名称,,ACTIVE,2026-09-18,Autopay 为香港银行界对直接扣款服务的惯用名称，界面保留原文
+FIN-FXR-001,GLOBAL,FX,Form Label,外币兑换买入卖出汇率,Exchange Rate,FX Rate,,汇率,匯率,STANDARD,ISO 20022 / 国际外汇业务通用标准,https://www.iso20022.org,ACTIVE,2026-09-18,展示实际成交价时须区分 Buy / Sell 方向，不得只显示单一汇率
+FIN-INV-001,REGIONAL_SEA,Investments,Product,集合投资计划基金产品,Unit Trust,,Mutual Fund,单位信托基金,單位信託基金,STANDARD,英联邦市场基金业务通用命名 (SG/MY/HK),,ACTIVE,2026-09-18,Mutual Fund 为美式表达，本市场体系统一英式命名 (R-GEN-003)
+FIN-INV-002,LOCAL_SG,Investments,Statutory Scheme,新加坡中央公积金计划,CPF,Central Provident Fund,,中央公积金,中央公積金,MANDATORY,CPF Board (Singapore),https://www.cpf.gov.sg,ACTIVE,2026-09-18,CPF 为法定计划名称；全称 Central Provident Fund 仅用于法定披露场景
+FIN-INV-003,LOCAL_HK,Investments,Statutory Scheme,香港强制性公积金计划,MPF,Mandatory Provident Fund,,强积金,強積金,MANDATORY,MPFA (Mandatory Provident Fund Schemes Authority),https://www.mpfa.org.hk,ACTIVE,2026-09-18,MPF 为法定计划名称；界面简写用 MPF，全称仅用于法定披露场景

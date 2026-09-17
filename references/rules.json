@@ -1,5 +1,5 @@
 {
-  "version": "1.2.0",
+  "version": "1.3.0",
   "project": "i18n_BANK",
   "last_updated": "2026-09-18",
   "detection_policy": {
@@ -44,7 +44,7 @@
       "name": "格式与语法错误",
       "rule_id": "R-DEF-005",
       "default_severity": "MEDIUM",
-      "description": "包含英文单复数错误、冒号后缺少空格、全半角标点混用、大小写不一致等规范问题。",
+      "description": "包含英文单复数错误、冒号后缺少空格、全半角标点混用、大小写不一致、金额/日期格式违规等规范问题。",
       "typical_pattern": "(1\\s+[a-zA-Z]+s\\b|(?<![0-9]):[A-Za-z])"
     },
     {
@@ -154,7 +154,7 @@
     {
       "rule_id": "R-GEN-003",
       "name": "British spelling for SEA English",
-      "statement": "东南亚市场英文界面默认英式拼写体系（en-GB/en-SG/en-MY）：Instalment, Cheque, Authorised。",
+      "statement": "东南亚市场英文界面默认英式拼写体系（en-GB/en-SG/en-MY）：Instalment, Cheque, Authorised, Favourite。",
       "spec_ref": "specification.md 2.1 P2 级"
     },
     {
@@ -162,6 +162,120 @@
       "name": "Severity arbitration",
       "statement": "严重级以缺陷码 default_severity 为基线：支付/确认/法定披露链路或 MANDATORY 词条强制升一级；降级必须在报告依据列写明理由。",
       "spec_ref": "specification.md 3.1"
+    }
+  ],
+  "format_rules": [
+    {
+      "rule_id": "R-FMT-001",
+      "market": "SG",
+      "currency_code": "SGD",
+      "currency_symbol": "S$",
+      "symbol_position": "prefix",
+      "thousands_sep": ",",
+      "decimal_sep": ".",
+      "date_format": "DD MMM YYYY",
+      "note": "en-SG UIs; e.g. S$1,234.50 / 15 Mar 2026"
+    },
+    {
+      "rule_id": "R-FMT-002",
+      "market": "MY",
+      "currency_code": "MYR",
+      "currency_symbol": "RM",
+      "symbol_position": "prefix",
+      "thousands_sep": ",",
+      "decimal_sep": ".",
+      "date_format": "DD/MM/YYYY",
+      "note": "e.g. RM1,234.50 / 15/03/2026"
+    },
+    {
+      "rule_id": "R-FMT-003",
+      "market": "HK",
+      "currency_code": "HKD",
+      "currency_symbol": "HK$",
+      "symbol_position": "prefix",
+      "thousands_sep": ",",
+      "decimal_sep": ".",
+      "date_format": "DD MMM YYYY",
+      "note": "e.g. HK$1,234.50 / 15 Mar 2026"
+    },
+    {
+      "rule_id": "R-FMT-004",
+      "market": "TH",
+      "currency_code": "THB",
+      "currency_symbol": "฿",
+      "symbol_position": "prefix",
+      "thousands_sep": ",",
+      "decimal_sep": ".",
+      "date_format": "DD/MM/YYYY",
+      "calendar": "buddhist_era",
+      "note": "th-TH UIs use the Buddhist Era year (CE +543, e.g. 2569) and the ฿ symbol; English UIs in TH use CE years and prefer the THB code prefix. Calendar/locale mismatch is a format defect."
+    },
+    {
+      "rule_id": "R-FMT-005",
+      "market": "ID",
+      "currency_code": "IDR",
+      "currency_symbol": "Rp",
+      "symbol_position": "prefix",
+      "thousands_sep": ".",
+      "decimal_sep": ",",
+      "date_format": "DD/MM/YYYY",
+      "note": "id-ID UIs use period thousands / comma decimals (Rp1.500.000,00); English UIs follow en conventions with the Rp or IDR prefix."
+    }
+  ],
+  "format_conventions": [
+    {
+      "rule_id": "R-FMT-006",
+      "name": "Amount spacing",
+      "statement": "金额须使用货币符号或 ISO 4217 代码之一，不得混用；代码与金额之间有且仅有一个空格（SGD 100.00 / S$100.00 合规；SGD100.00、S$ SGD 100 违规）。"
+    },
+    {
+      "rule_id": "R-FMT-007",
+      "name": "Per-screen style consistency",
+      "statement": "同一界面内金额风格（符号 vs 代码、分隔符体系）必须统一，混用记 FORMAT_GRAMMAR。"
+    }
+  ],
+  "metrics": [
+    {
+      "rule_id": "R-MET-001",
+      "key": "defect_density",
+      "name": "缺陷密度",
+      "formula": "defects / screens reviewed",
+      "unit": "defects per screen"
+    },
+    {
+      "rule_id": "R-MET-002",
+      "key": "severity_distribution",
+      "name": "严重级分布",
+      "formula": "count per severity (High / Medium / Low)",
+      "unit": "counts"
+    },
+    {
+      "rule_id": "R-MET-003",
+      "key": "code_distribution",
+      "name": "缺陷码分布",
+      "formula": "count per defect code (7 codes)",
+      "unit": "counts"
+    },
+    {
+      "rule_id": "R-MET-004",
+      "key": "first_pass_rate",
+      "name": "一次通过率",
+      "formula": "screens with zero defects / screens reviewed",
+      "unit": "percent"
+    },
+    {
+      "rule_id": "R-MET-005",
+      "key": "escalation_count",
+      "name": "合规升级数",
+      "formula": "findings routed to compliance review (ALERT)",
+      "unit": "count"
+    },
+    {
+      "rule_id": "R-MET-006",
+      "key": "gap_count",
+      "name": "词表缺口数",
+      "formula": "TERMBASE_GAP proposals raised",
+      "unit": "count"
     }
   ],
   "governance": {
