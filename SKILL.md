@@ -1,0 +1,71 @@
+---
+name: i18n-bank
+description: "Banking app i18n/LQA skill: reviews fintech UI copy against terminology, compliance and layout rules. Invoke for app copy review or i18n defect checks (国际化走查 · 本地化质检 · 银行App文案走查 · 术语合规检查)."
+---
+
+# i18n Bank LQA
+
+Production-grade localization QA for banking & fintech app UI copy
+(mobile iOS/Android, H5, mini-program) across SG / MY / HK / TH / ID markets.
+
+## Assets & source of truth
+
+| Asset | Role |
+|-------|------|
+| `references/rules.json` | Numeric SSOT — defect codes, compliance levels, layout budgets. Every limit cited in a report comes from here. |
+| `references/termbase.csv` | Terminology SSOT — preferred / variant / forbidden terms with regulatory sources. |
+| `references/specification.md` | Human-readable judgment logic. Explains *why*; never overrides the SSOTs on numbers. |
+| `examples/golden-case.md` | Golden example for output alignment. |
+| `validate.py` | Release gate: cross-file consistency + regex regression. |
+
+If `specification.md` disagrees with `rules.json` or `termbase.csv`, the SSOT files win; report the disagreement as a defect.
+
+## Input contract
+
+One of:
+
+1. **Annotated screenshots** — numbered red boxes marking suspect strings. Reproduce on-screen text verbatim, including truncation, line breaks and ellipsis.
+2. **String table** — columns: `key, source, target, locale`.
+
+Required context — ask before proceeding if missing:
+
+- Target market (SG / MY / HK / TH / ID)
+- UI language under review
+
+## Workflow
+
+1. **Load** `references/rules.json` and `references/termbase.csv`.
+2. **Component identification** — classify each red box / string row by component type (keys of `layout_constraints` in rules.json) and look up its line / character budget.
+3. **Terminology arbitration** — query the termbase by the triple (term, `context_component`, `scope`); priority `LOCAL_XX` > `REGIONAL_SEA` > `GLOBAL`. Never judge on a bare term match.
+4. **Defect detection** — classify against the defect codes in rules.json. A `typical_pattern` regex hit is a **candidate hint only**: confirm it against the code's judgment criteria before reporting, and discard false positives.
+5. **Severity** — start from the defect code's default severity; escalate one level when the string sits in a payment / confirmation / regulatory-disclosure flow or involves a MANDATORY term; any de-escalation must be justified in the Rationale column.
+6. **Report** — the 8-column table below plus summary metrics (count per defect code, distribution by severity, defects per screen). Report language follows the language of the request.
+
+### Escalation paths (mandatory)
+
+- **Compliance alert** — findings tagged ALERT go to a dedicated "for compliance review" section. Never silently fix them. Never issue legal opinions.
+- **TERMBASE_GAP** — terms the termbase does not cover are flagged `TERMBASE_GAP` with a suggested entry and `source_authority`. Never invent termbase entries, rule IDs, or regulatory citations.
+
+## Output contract
+
+Markdown table, 8 columns, in order:
+
+`# | Component | Current copy | Defect | Severity | Fix | Compliance | Rationale`
+
+- **Current copy**: verbatim on-screen string.
+- **Fix**: must fit the component's character budget and use the termbase preferred term.
+- **Rationale**: cite the rule, termbase `entry_id`, or regulatory authority.
+- Match the structure of `examples/golden-case.md`.
+
+## Boundaries
+
+- MANDATORY terms are locked to official wording — never paraphrase, abbreviate, or "improve".
+- British spelling (en-GB family) is the default for SEA English locales.
+- Defect codes and compliance tags keep their canonical form regardless of report language.
+- Run `validate.py` after any asset change; the gate must be green before a release.
+
+## Maintenance
+
+- Change flow: edit the SSOT (`rules.json` / `termbase.csv`) → sync `specification.md` → `python3 validate.py` → commit.
+- Termbase `entry_id`s are permanent; never reuse a retired ID.
+- Add a regression case to `validate.py` for every fixed false positive / false negative.
