@@ -1,0 +1,116 @@
+{
+  "version": "1.0.0",
+  "project": "i18n_BANK",
+  "last_updated": "2026-09-17",
+  "defect_types": [
+    {
+      "code": "TRUNCATION",
+      "name": "界面截断",
+      "severity": "HIGH",
+      "description": "文字超长被系统以省略号（...）截断或超出渲染视口被裁剪，丢失关键信息。",
+      "typical_pattern": "(…|\\.{3}|cut-off)"
+    },
+    {
+      "code": "LINE_BREAK",
+      "name": "不良折行/断词",
+      "severity": "MEDIUM",
+      "description": "单词被非正常音节截断跨行，或不必要的折行破坏了网格对称与卡片对齐。",
+      "typical_pattern": "([a-zA-Z]+-\\n[a-zA-Z]+|\\b[a-zA-Z]{1,4}\\b$)"
+    },
+    {
+      "code": "MIXED_LANG",
+      "name": "语言混排/漏翻",
+      "severity": "HIGH",
+      "description": "目标语言界面出现残留的未翻译中文、非预期语种夹杂或拼装混排。",
+      "typical_pattern": "([\\u4e00-\\u9fa5]+[a-zA-Z]+|[a-zA-Z]+[\\u4e00-\\u9fa5]+)"
+    },
+    {
+      "code": "REDUNDANCY",
+      "name": "文案冗余/未精炼",
+      "severity": "MEDIUM",
+      "description": "空间受限组件未遵循语境省略原则，重复父级分类名称或带有泛化冗余后缀（如 Service, Management）。",
+      "typical_pattern": "(Card Application|Card Activation|Local Transfer|Payroll Service)"
+    },
+    {
+      "code": "FORMAT_GRAMMAR",
+      "name": "格式与语法错误",
+      "severity": "MEDIUM",
+      "description": "包含英文单复数错误、冒号后缺少空格、全半角标点混用、大小写不一致等规范问题。",
+      "typical_pattern": "(1\\s+[a-zA-Z]+s\\b|:\\S)"
+    },
+    {
+      "code": "COMPLIANCE",
+      "name": "术语/合规不符",
+      "severity": "HIGH",
+      "description": "未采用目标国家央行法定术语、违背行业标准命名、或存在利息/收益不当披露等合规隐患。",
+      "typical_pattern": "(Quick Pay|Fast Pay|Installment Apply|Guaranteed Return)"
+    },
+    {
+      "code": "PLACEHOLDER",
+      "name": "变量占位异常",
+      "severity": "HIGH",
+      "description": "动态模板占位符未渲染直接外露，或因硬编码语序拼接导致目标语言语法颠倒。",
+      "typical_pattern": "(\\{[a-zA-Z0-9_]+\\}|%[sd]|\\$\\{.*?\\})"
+    }
+  ],
+  "compliance_levels": {
+    "MANDATORY": {
+      "tag": "[法定合规]",
+      "description": "受央行或金融监管条例强制约束的法定名词，严禁私自修改。",
+      "action": "强制锁定为官方口径"
+    },
+    "STANDARD": {
+      "tag": "[行业标准]",
+      "description": "国际银行与支付清算通用协议（ISO 20022/SWIFT/Card Schemes）。",
+      "action": "推荐遵循行业标准写法"
+    },
+    "GENERAL": {
+      "tag": "[基础表达]",
+      "description": "常规界面交互用语，侧重精炼与排版空间平衡，无监管合规风险。",
+      "action": "遵循语境省略与一字精炼原则"
+    },
+    "ALERT": {
+      "tag": "[合规预警]",
+      "description": "原词或改写可能引发虚假宣传、误导或监管遗漏，需人工合规复审。",
+      "action": "提示业务与法务二次审核"
+    }
+  },
+  "layout_constraints": {
+    "tab_bar": {
+      "max_lines": 1,
+      "max_en_chars": 10,
+      "max_sea_chars": 14,
+      "style": "Single core noun"
+    },
+    "grid_tile": {
+      "max_lines": 2,
+      "max_en_chars": 12,
+      "max_sea_chars": 16,
+      "style": "Single verb preferred, context omitted"
+    },
+    "primary_button": {
+      "max_lines": 1,
+      "max_en_chars": 14,
+      "max_sea_chars": 20,
+      "style": "Imperative verb"
+    },
+    "form_label": {
+      "max_lines": 1,
+      "max_en_chars": 16,
+      "max_sea_chars": 24,
+      "style": "Noun phrase with trailing colon"
+    },
+    "list_title": {
+      "max_lines": 1,
+      "max_en_chars": 22,
+      "max_sea_chars": 30,
+      "style": "Concise noun phrase"
+    },
+    "page_header": {
+      "max_lines": 1,
+      "max_en_chars": 24,
+      "max_sea_chars": 32,
+      "style": "Full business concept permitted"
+    }
+  }
+}

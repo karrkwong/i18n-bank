@@ -1,0 +1,37 @@
+entry_id,scope,domain,context_component,definition,preferred_en,variant_en,forbidden_en,preferred_zh_cn,preferred_zh_hk,compliance_level,source_authority
+FIN-TRF-001,LOCAL_SG,Transfers,Payment Service,新加坡官方快速支付清算服务,PayNow,PayNow Transfer,Instant Pay; Fast Pay,PayNow,PayNow,MANDATORY,MAS (Monetary Authority of Singapore) / ABS PayNow Scheme Rules
+FIN-TRF-002,LOCAL_MY,Transfers,Payment Service,马来西亚官方即时跨行转账服务,DuitNow,DuitNow Transfer,Quick Pay; Instant Transfer,DuitNow,DuitNow,MANDATORY,BNM (Bank Negara Malaysia) / PayNet Interoperable Credit Transfer Framework
+FIN-TRF-003,LOCAL_HK,Transfers,Payment Service,香港官方快速支付系统转数快,FPS,FPS Transfer,Fast Payment System; Quick Pay,转数快,轉數快,MANDATORY,HKMA (Hong Kong Monetary Authority) / 轉數快系統規則
+FIN-TRF-004,LOCAL_TH,Transfers,Payment Service,泰国官方即时支付系统,PromptPay,PromptPay Transfer,Quick Transfer,PromptPay,PromptPay,MANDATORY,BOT (Bank of Thailand) / PromptPay System Regulations
+FIN-TRF-005,LOCAL_ID,Transfers,Payment Service,印尼官方现代即时零售支付系统,BI-FAST,BI-FAST Transfer,Instant Transfer,BI-FAST,BI-FAST,MANDATORY,BI (Bank Indonesia) / PADG BI-FAST Blueprint
+FIN-TRF-006,LOCAL_ID,Transfers,Payment Service,印尼官方统一国家二维码支付标准,QRIS,QRIS Pay,QR Code,QRIS,QRIS,MANDATORY,BI (Bank Indonesia) / QRIS National Standard
+FIN-TRF-010,GLOBAL,Transfers,General,国际银行账号识别码,IBAN,IBAN,Account Number; Swift Account,国际银行账号,國際銀行賬號,STANDARD,ISO 13616 / SWIFT Standards
+FIN-TRF-011,GLOBAL,Transfers,General,银行全球唯一识别代码,BIC / SWIFT Code,SWIFT Code; BIC,Bank Code,SWIFT代码,SWIFT代碼,STANDARD,ISO 9362 / SWIFT Standards
+FIN-TRF-012,REGIONAL_SEA,Transfers,Grid Tile / Menu,同城/本地境内跨行转账,Local,Local Transfer,Domestic Remittance,本地转账,本地轉賬,GENERAL,UI/UX 语境省略原则 (在 Transfer 分区下写 Local)
+FIN-TRF-013,REGIONAL_SEA,Transfers,Grid Tile / Menu,跨境/国际外币汇款业务,Overseas,Overseas Transfer; Telegraphic Transfer,International Remit,跨境汇款,跨境匯款,GENERAL,UI/UX 语境省略原则 (在 Transfer 分区下写 Overseas)
+FIN-TRF-014,GLOBAL,Transfers,Form Label,转账或付款的交易接收方/受益人,Beneficiary,Recipient; Payee,Receiver,收款人/受益人,收款人/受益人,STANDARD,ISO 20022 Payments Initiation Standards
+FIN-TRF-015,REGIONAL_SEA,Transfers,Status,当日交易截止处理时间,Cut-off Time,Cut-Off,Deadline,截数时间,截數時間,STANDARD,东南亚各商业银行清算通用准则
+FIN-ACT-001,REGIONAL_SEA,Accounts,Account Type,活期结算/往来支票账户,Current Account,Checking Account,Demand Deposit (卡片紧凑区),往来账户,往來賬戶,STANDARD,东南亚主要商业银行惯例 (英式英语体系)
+FIN-ACT-002,REGIONAL_SEA,Accounts,Account Type,定期储蓄存款账户,Fixed Deposit,FD; Term Deposit,Time Deposit (美式表达),定期存款,定期存款,STANDARD,英联邦及东南亚银行业标准 (FD 通用)
+FIN-ACT-003,REGIONAL_SEA,Accounts,Account Type,普通储蓄账户,Savings Account,Savings,Deposit Book,储蓄账户,儲蓄賬戶,STANDARD,国际通用银行业务术语
+FIN-ACT-004,REGIONAL_SEA,Accounts,Card Header,按港币/新币等值的活期存款总额,Demand Deposit (HKD),Demand Deposit,Demand Deposit (HKD Equivalent),活期存款(港币),活期存款(港幣),GENERAL,UI/UX 空间精简原则 (Equivalent在卡片场景冗余)
+FIN-ACT-005,GLOBAL,Accounts,Status,账户状态或列表计数,Accounts,Account,1 accounts (复数语法错误),账户,賬戶,GENERAL,i18n 单复数标准语法规则
+FIN-CRD-001,GLOBAL,Cards,Grid Tile / CTA,信用卡申请操作动词,Apply,Apply Now,Card Application (按钮场景),申请,申請,GENERAL,UI/UX 一字精炼与语境省略原则
+FIN-CRD-002,GLOBAL,Cards,Grid Tile / CTA,新卡开卡或激活操作动词,Activate,Activate Card,Card Activation (按钮场景),激活,激活,GENERAL,UI/UX 一字精炼与语境省略原则
+FIN-CRD-003,REGIONAL_SEA,Cards,Service,信用卡或账单分期付款业务,Instalment,Instalment Plan,Installment (美式拼写); Card Instalment,分期付款,分期付款,STANDARD,英式英语拼写标准 (新加坡/马来西亚/香港标准)
+FIN-CRD-004,GLOBAL,Cards,Form / Security,卡背面安全验证码,CVV / CVC,CVV2; CVC2,Card Security Code (过长),安全码,安全碼,STANDARD,Visa/Mastercard 国际卡组织标准
+FIN-CRD-005,GLOBAL,Cards,Billing,信用卡每期最低还款额,Minimum Payment,Min Payment,Lowest Repayment,最低还款额,最低還款額,STANDARD,国际卡组织清算及银行条款标准
+FIN-CRD-006,GLOBAL,Cards,Service,信用卡预借现金/提现业务,Cash Advance,Cash Advance,Credit Card Withdraw,现金预借/提现,現金透支/提取,STANDARD,国际信用卡通用业务标准
+FIN-LON-001,REGIONAL_SEA,Loans,Disclosure,贷款年化有效实际利率,EIR / APR,Effective Interest Rate,Interest Rate (未标年化/有效),实际年利率,實際年利率,MANDATORY,MAS Notice 637 / BNM Consumer Protection Policy (强制披露)
+FIN-LON-002,REGIONAL_SEA,Loans,Service,循环信用贷款/个人透支额度,Revolving Loan,Overdraft Facility,Credit Line,循环贷款,循環貸款,STANDARD,巴塞尔协议与商业银行业务分类
+FIN-LON-003,GLOBAL,Loans,Grid Tile / CTA,还款操作动词,Repay,Make Repayment,Repay Immediately (冗长),还款,還款,GENERAL,UI/UX 一字精炼原则
+FIN-SEC-001,LOCAL_SG,Security,Identity,新加坡国民及永久居民身份证号,NRIC,NRIC No.,ID Card; National ID,身份证号,身份證號,MANDATORY,新加坡移民与关卡局 (ICA) / MAS 监管规范
+FIN-SEC-002,LOCAL_SG,Security,Identity,新加坡外籍人士准证识别号,FIN,FIN No.,Foreigner ID,准证号码,准證號碼,MANDATORY,新加坡人力部 (MOM) / ICA 法定标识
+FIN-SEC-003,LOCAL_MY,Security,Identity,马来西亚国民身份证件及号码,MyKad / NRIC,MyKad Number,IC Number,国民身份证,國民身份證,MANDATORY,马来西亚国民登记局 (JPN) 法定名称
+FIN-SEC-004,LOCAL_HK,Security,Identity,香港永久性居民身份证及号码,HKID,HKID Card,Hong Kong ID,香港身份证,香港身份證,MANDATORY,香港入境事务处法定标识
+FIN-SEC-005,GLOBAL,Security,Auth,一次性动态验证码,OTP,One-Time Password,SMS Code,动态验证码,動態驗證碼,STANDARD,国际金融安全认证通用标准
+FIN-SEC-006,GLOBAL,Security,Auth,个人安全识别密码,PIN,PIN Code,PIN Management (冗长),密码,密碼,GENERAL,UI/UX 精炼原则 (管理类功能直接用 PIN)
+FIN-COM-001,GLOBAL,CommonUI,Navigation,返回上一页交互,Back,Back,Return Back; Go Back,返回,返回,GENERAL,标准移动端交互规范
+FIN-COM-002,GLOBAL,CommonUI,CTA Button,确认当前操作或提交表单,Confirm,Submit,Make Sure; OK,确认,確認,GENERAL,标准移动端交互规范
+FIN-COM-003,GLOBAL,CommonUI,CTA Button,放弃或取消当前流程,Cancel,Dismiss,Give Up,取消,取消,GENERAL,标准移动端交互规范
+FIN-COM-004,GLOBAL,CommonUI,List Row / Action,查看完整交易或协议详情,Details,View Details,More Details,详情,詳情,GENERAL,标准移动端交互规范
