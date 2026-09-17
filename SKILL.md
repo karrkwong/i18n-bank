@@ -12,8 +12,8 @@ Production-grade localization QA for banking & fintech app UI copy
 
 | Asset | Role |
 |-------|------|
-| `references/rules.json` | Numeric SSOT — defect codes, compliance levels, layout budgets. Every limit cited in a report comes from here. |
-| `references/termbase.csv` | Terminology SSOT — preferred / variant / forbidden terms with regulatory sources. |
+| `references/rules.json` | Numeric SSOT — defect codes, compliance levels, layout budgets, stable rule IDs (`R-DEF` / `R-LAY` / `R-GEN`), governance thresholds. Every limit cited in a report comes from here. |
+| `references/termbase.csv` | Terminology SSOT — preferred / variant / forbidden terms with regulatory sources and governance fields (`status`, `review_date`, `source_url`). |
 | `references/specification.md` | Human-readable judgment logic. Explains *why*; never overrides the SSOTs on numbers. |
 | `examples/golden-case.md` | Golden example for output alignment. |
 | `validate.py` | Release gate: cross-file consistency + regex regression. |
@@ -36,7 +36,7 @@ Required context — ask before proceeding if missing:
 
 1. **Load** `references/rules.json` and `references/termbase.csv`.
 2. **Component identification** — classify each red box / string row by component type (keys of `layout_constraints` in rules.json) and look up its line / character budget.
-3. **Terminology arbitration** — query the termbase by the triple (term, `context_component`, `scope`); priority `LOCAL_XX` > `REGIONAL_SEA` > `GLOBAL`. Never judge on a bare term match.
+3. **Terminology arbitration** — query the termbase by the triple (term, `context_component`, `scope`) among `status = ACTIVE` entries; priority `LOCAL_XX` > `REGIONAL_SEA` > `GLOBAL`. Never judge on a bare term match.
 4. **Defect detection** — classify against the defect codes in rules.json. A `typical_pattern` regex hit is a **candidate hint only**: confirm it against the code's judgment criteria before reporting, and discard false positives.
 5. **Severity** — start from the defect code's default severity; escalate one level when the string sits in a payment / confirmation / regulatory-disclosure flow or involves a MANDATORY term; any de-escalation must be justified in the Rationale column.
 6. **Report** — the 8-column table below plus summary metrics (count per defect code, distribution by severity, defects per screen). Report language follows the language of the request.
@@ -44,7 +44,7 @@ Required context — ask before proceeding if missing:
 ### Escalation paths (mandatory)
 
 - **Compliance alert** — findings tagged ALERT go to a dedicated "for compliance review" section. Never silently fix them. Never issue legal opinions.
-- **TERMBASE_GAP** — terms the termbase does not cover are flagged `TERMBASE_GAP` with a suggested entry and `source_authority`. Never invent termbase entries, rule IDs, or regulatory citations.
+- **TERMBASE_GAP** — terms the termbase does not cover go into a dedicated gap table: `Term | Context | Scope | Suggested entry_id | Suggested authority | Note`. The suggested ID takes the next free slot in its domain block and must carry the `(proposed)` suffix; the gate rejects gap IDs that collide with existing entries. Gap rows are proposals for governance review — never insert them into `termbase.csv` directly, never invent termbase entries, rule IDs, or regulatory citations.
 
 ## Output contract
 
@@ -54,7 +54,7 @@ Markdown table, 8 columns, in order:
 
 - **Current copy**: verbatim on-screen string.
 - **Fix**: must fit the component's character budget and use the termbase preferred term.
-- **Rationale**: cite the rule, termbase `entry_id`, or regulatory authority.
+- **Rationale**: cite the stable rule ID (`R-DEF-…` / `R-LAY-…` / `R-GEN-…`), termbase `entry_id`, or regulatory authority.
 - Match the structure of `examples/golden-case.md`.
 
 ## Boundaries
@@ -67,5 +67,7 @@ Markdown table, 8 columns, in order:
 ## Maintenance
 
 - Change flow: edit the SSOT (`rules.json` / `termbase.csv`) → sync `specification.md` → `python3 validate.py` → commit.
-- Termbase `entry_id`s are permanent; never reuse a retired ID.
+- Termbase `entry_id`s are permanent; never reuse a retired ID. Retired entries keep `RETIRED` status in place for traceability — never delete them.
+- Gap proposals live in reports only; the working group adopts them as `ACTIVE` entries after review.
+- Re-verify MANDATORY entries within `governance.mandatory_max_age_days` (the gate blocks stale ones); other ACTIVE entries trigger a warning past `stale_warning_days`.
 - Add a regression case to `validate.py` for every fixed false positive / false negative.
