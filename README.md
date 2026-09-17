@@ -35,6 +35,6 @@ git clone https://github.com/karrkwong/i18n-bank <project>/.trae/skills/i18n-ban
 ## Roadmap
 
 - [x] Phase 1 — skill framework (SKILL.md, references layout, golden case, release gate)
-- [ ] Phase 2 — P0 fixes: regex false positives/negatives, dialog_toast layout gap, termbase field hygiene, severity arbitration (gate is red until this lands)
+- [x] Phase 2 — P0 fixes: regex false positives/negatives, dialog_toast layout gap, termbase field hygiene, severity arbitration (gate green)
 - [ ] Phase 3 — quality hardening: governance fields, stable rule IDs
 - [ ] Phase 4 — coverage expansion: domains, number/currency/date formats, metrics
