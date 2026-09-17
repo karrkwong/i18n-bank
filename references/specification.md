@@ -18,7 +18,7 @@
 2. **P1 级 - 全球/区域金融行业通用标准 (Industry Standard)**：
    - 遵循 ISO 20022、SWIFT MT/MX、卡组织（Visa/Mastercard Rules）标准。
    - 典型对象：IBAN, BIC/SWIFT Code, CVV/CVC, Cut-off Time, Beneficiary, Current Account, Fixed Deposit。
-3. **P2 级 - 本地化心智表达与惯用语 (Localization Best Practice)**：
+3. **P2 级 - 本地化心智表达与惯用语 (Localization Best Practice)** `R-GEN-003`：
    - 符合当地金融消费者的日常理解习惯。区分英联邦英语体系（en-GB/en-SG/en-MY）与美式英语体系（en-US）。优先采用英式拼写（如 *Instalment*, *Cheque*, *Authorised*）。
 4. **P3 级 - 基础前端交互用语 (General UI)**：
    - 基础交互按钮、导航、Toast 等，不涉及金融法律风险，侧重简洁明了。
@@ -27,7 +27,7 @@
 
 ### 2.2 前端排版与组件精炼原则 (UI Layout & Conciseness Rules)
 
-#### 标准线一：功能组件一字精炼 (Single-Word Action)
+#### 标准线一：功能组件一字精炼 (Single-Word Action) `R-GEN-001`
 在网格宫格（Grid Tile）、操作按钮（CTA Button）、Tab 标签等空间极度受限组件中，文字尽量压缩为一个核心动词/名词。
 - 例：`Card Application` → **`Apply`**
 - 例：`Card Activation` → **`Activate`**
@@ -35,7 +35,7 @@
 - 例：`Repay Immediately` → **`Repay`**
 *(注：标准金融专有名词如 FPS, DuitNow, IBAN, Instalment 等不受此限)*
 
-#### 标准线二：语境省略，拒绝层级冗余 (Context-Aware Omission)
+#### 标准线二：语境省略，拒绝层级冗余 (Context-Aware Omission) `R-GEN-002`
 当组件已经处于明确的父级业务分区或功能模块下时，组件文案不得重复所属分类名称。
 - 在 **Cards（信用卡/卡片）** 分区下：使用 `Apply`（非 Card Application），使用 `Activate`（非 Card Activation）。
 - 在 **Transfer（转账）** 分区下：使用 `Local`（非 Local Transfer），使用 `Overseas`（非 Overseas Remittance）。
@@ -57,27 +57,32 @@
 | **严重级** | 问题影响程度 | 高 (High) / 中 (Medium) / 低 (Low)；定级与升降级遵循 3.1 仲裁规则 |
 | **修复建议 (Fix)** | 推荐的新译法/新文案 | 符合金融标准与组件字符限制的最优解 |
 | **合规性评估** | 法律合规与监管分类 | 必须在 4 级准则中选一（见第 5 节） |
-| **规则与依据说明** | 判定理由与权威追溯 | 明确说明规则编号、语境省略依据或引用的央行/行业标准 |
+| **规则与依据说明** | 判定理由与权威追溯 | 明确说明规则编号（R-GEN / R-DEF / R-LAY）、语境省略依据或引用的央行/行业标准 |
+
+### 3.1 严重级仲裁规则 (Severity Arbitration) `R-GEN-004`
+以 `rules.json` 中各缺陷码的 `default_severity` 为基线定级：
+- **强制升级**：字符串处于支付 / 确认 / 法定披露链路，或涉及 MANDATORY 词条、触发合规预警时，升一级。
+- **降级须说明**：纯装饰性、无信息损失场景可降一级，但必须在「规则与依据说明」列写明理由。
 
 ---
 
 ## 4. 固化缺陷类型体系 (7 Defect Codes)
 
-为便于自动化统计与质量度量，走查缺陷严格限定为以下 7 类：
+为便于自动化统计与质量度量，走查缺陷严格限定为以下 7 类；各缺陷码的稳定编号（`R-DEF-001` ~ `R-DEF-007`）、默认严重级与机器初筛模式统一定义于 `rules.json`。`typical_pattern` 命中仅作机器初筛候选提示，命中后必须按下列判定标准复核定性并剔除误报，方可写入走查报告：
 
-1. **`TRUNCATION`（界面截断）**
+1. **`TRUNCATION`（界面截断）** `R-DEF-001`
    - **判定**：文本超长被系统以 `...` 截断，或文本超出组件渲染边界被裁剪，导致核心信息丢失。
-2. **`LINE_BREAK`（不良折行/断词）**
-   - **判定**：英文单词在非连字符处被物理拆裂（如 `Transactio\nns`），或无谓换行导致卡片高度破坏视觉对齐。
-3. **`MIXED_LANG`（语言混排/漏翻）**
-   - **判定**：当前语言界面残留源语言（如未翻译中文），或未经系统化定义的中英文杂合串（如 `FPS快速支付Transfer`）。
-4. **`REDUNDANCY`（文案冗余/未精炼）**
+2. **`LINE_BREAK`（不良折行/断词）** `R-DEF-002`
+   - **判定**：英文单词在非连字符处被物理拆裂（如 `Transactio\nns`），或无谓换行导致卡片高度破坏视觉对齐；连字符处折行（如 `Inter-\nnational`）不视为缺陷。
+3. **`MIXED_LANG`（语言混排/漏翻）** `R-DEF-003`
+   - **判定**：当前语言界面残留源语言（如未翻译中文），或未经系统化定义的多语种杂合串（如 `FPS快速支付Transfer`、泰文界面夹杂英文 `แอป Transfer`）。检测覆盖中日韩文与泰文等非拉丁文字；马来语 / 印尼语等拉丁字母语种无法按文字范围识别，须采用源串残留比对策略。
+4. **`REDUNDANCY`（文案冗余/未精炼）** `R-DEF-004`
    - **判定**：未遵循语境省略，重复分类前缀（如 Cards 模块下的 `Card Application`）或带有冗余修饰词。
-5. **`FORMAT_GRAMMAR`（格式与语法规范）**
+5. **`FORMAT_GRAMMAR`（格式与语法规范）** `R-DEF-005`
    - **判定**：单复数语法错误（如 `1 accounts`）、标点符号错误（孤儿标点、全半角混用、冒号后缺空格）、大小写混乱。
-6. **`COMPLIANCE`（术语/合规不符）**
+6. **`COMPLIANCE`（术语/合规不符）** `R-DEF-006`
    - **判定**：未采用目标国央行法定表述或行业标准术语，或产生误导性金融承诺（如利率未注明年化、保障性表达违规）。
-7. **`PLACEHOLDER`（代码/占位符异常）**
+7. **`PLACEHOLDER`（代码/占位符异常）** `R-DEF-007`
    - **判定**：动态变量名直接外露（如 `{0}`, `%s`），或多语言语序硬拼接导致语法颠倒。
 
 ---
@@ -116,5 +121,29 @@
 | **页面主标题 (Page Header)** | 单行 | ≤ 24 | ≤ 32 | 完整业务概念 (Card Application) |
 | **弹窗与提示 (Dialog / Toast)**| ≤ 2 行 | ≤ 60 | ≤ 90 | 规范主谓宾语句，占位符规范 |
 
+各组件排版预算的稳定编号 `R-LAY-001` ~ `R-LAY-007`（依上表顺序：Tab Bar → Dialog / Toast）定义于 `rules.json` `layout_constraints` 各键的 `rule_id`，供报告「规则与依据说明」列引用。
+
 ---
-*版本：v1.1.0 | 维护团队：i18n 术语与界面走查工作组*
+
+## 7. 术语库治理与词表缺口流程 (Termbase Governance & Gap Process)
+
+### 7.1 治理字段与生命周期
+术语库每条词条携带三个治理字段，由发布门禁 `validate.py` 强制校验；阈值以 `rules.json` `governance` 为单一事实源：
+- **`status`**：`ACTIVE`（生效词条，走查术语仲裁的查询范围）/ `RETIRED`（退役词条，仅为 ID 占位保留，内容供历史追溯）。走查中只查询 `ACTIVE` 词条。
+- **`review_date`**：最近一次对照权威来源核验的日期。任意 ACTIVE 词条超过 `governance.stale_warning_days` 未核验触发门禁警告；MANDATORY 词条超过 `governance.mandatory_max_age_days` 未核验直接阻断发布——法定术语必须周期性复核。
+- **`source_url`**：权威来源官方站点入口。所有 ACTIVE 的 MANDATORY 词条必须提供，保证法定口径可追溯核验。
+
+词条生命周期：走查报告中的 TERMBASE_GAP 建议（`FIN-XXX-NNN (proposed)` 格式）仅为提案，不得直接写入术语库；经术语工作组评审通过后以 `ACTIVE` 状态入库。`entry_id` 永久不变，退役词条不得删除、编号不得复用。
+
+### 7.2 TERMBASE_GAP 输出格式
+走查中发现术语库未覆盖的术语时，在报告汇总区按下表输出，不得静默编造判定：
+
+| 术语 | 所在语境 | 建议作用域 | 建议 entry_id | 建议权威来源 | 备注 |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| Credit Limit | 卡片详情页标题 | GLOBAL | FIN-CRD-007 (proposed) | 国际卡组织标准 | 提案仅供参考，须治理评审后入库 |
+
+- 建议 entry_id 取该业务域编号段的下一个空位，并强制带 `(proposed)` 后缀。
+- 发布门禁校验：`(proposed)` 编号不得与现有词条冲突；若该编号已入库，规范与黄金样例中的缺口示例须同步更新。
+
+---
+*版本：v1.2.0 | 维护团队：i18n 术语与界面走查工作组*
