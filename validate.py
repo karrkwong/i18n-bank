@@ -5,15 +5,23 @@
 Validates asset integrity before any change is released:
 
   1. termbase.csv  — structure, ID discipline, enum closures, field hygiene,
+                     governance fields (status, review_date, source_url),
                      cross-entry preferred/forbidden conflicts
-  2. rules.json    — schema closure (defect codes, compliance levels)
+  2. rules.json    — schema closure (defect codes, compliance levels),
+                     rule_id discipline (R-DEF / R-LAY / R-GEN),
+                     governance thresholds, regex regression suite
   3. spec <-> json — layout budget matrix consistency (both directions)
-  4. regex suite   — every typical_pattern must compile and pass the
-                     regression suite encoding DESIRED behavior
+  4. governance    — review freshness (stale warning / MANDATORY re-verify);
+                     ACTIVE MANDATORY entries must link to their regulator
+  5. citations     — rule IDs and termbase entry IDs referenced by the docs
+                     (specification.md / SKILL.md / golden-case.md / README.md)
+                     must resolve to defined assets; "(proposed)" gap IDs
+                     must not collide with existing entries
 
 Exit code 0 = releasable; 1 = blocked (errors). Warnings do not block.
 """
 import csv
+import datetime
 import json
 import re
 import sys
@@ -23,6 +31,9 @@ ROOT = Path(__file__).resolve().parent
 TERMBASE = ROOT / "references" / "termbase.csv"
 RULES = ROOT / "references" / "rules.json"
 SPEC = ROOT / "references" / "specification.md"
+SKILL = ROOT / "SKILL.md"
+GOLDEN = ROOT / "examples" / "golden-case.md"
+README = ROOT / "README.md"
 
 errors, warnings = [], []
 
@@ -34,6 +45,12 @@ CANONICAL_COMPLIANCE = ["MANDATORY", "STANDARD", "GENERAL", "ALERT"]
 SCOPE_VALUES = {
     "GLOBAL", "REGIONAL_SEA", "LOCAL_SG", "LOCAL_MY", "LOCAL_HK", "LOCAL_TH", "LOCAL_ID",
 }
+STATUS_VALUES = {"ACTIVE", "RETIRED"}
+
+RULE_ID_RE = re.compile(r"R-(?:DEF|LAY|GEN)-\d{3}")
+# A cited entry ID must exist — unless it is a gap proposal "(proposed)".
+FIN_CITED_RE = re.compile(r"FIN-[A-Z]{3}-\d{3}(?!\s*\(proposed\))")
+FIN_PROPOSED_RE = re.compile(r"(FIN-[A-Z]{3}-\d{3})\s*\(proposed\)")
 
 # Desired regex behavior: (input, should_match). The suite encodes the contract
 # the patterns must satisfy; known violations fail the gate until fixed.
@@ -69,12 +86,16 @@ COMPONENT_KEY_MAP = {
 EXPECTED_CSV_HEADER = [
     "entry_id", "scope", "domain", "context_component", "definition",
     "preferred_en", "variant_en", "forbidden_en", "preferred_zh_cn",
-    "preferred_zh_hk", "compliance_level", "source_authority", "note",
+    "preferred_zh_hk", "compliance_level", "source_authority",
+    "source_url", "status", "review_date", "note",
 ]
 
 # Fields that may legitimately be blank: a term can have no variants,
-# no forbidden forms (context restrictions live in `note`), or no note.
-OPTIONAL_CSV_FIELDS = {"variant_en", "forbidden_en", "note"}
+# no forbidden forms (context restrictions live in `note`), no external
+# source URL (internal standards), or no note.
+OPTIONAL_CSV_FIELDS = {"variant_en", "forbidden_en", "note", "source_url"}
+
+TODAY = datetime.date.today()
 
 
 def err(msg):
@@ -86,17 +107,26 @@ def warn(msg):
 
 
 def check_termbase():
+    """Returns (entries, n_active, n_retired); entries maps entry_id -> meta."""
+    if not TERMBASE.exists():
+        err("references/termbase.csv is missing")
+        return {}, 0, 0
     with TERMBASE.open(encoding="utf-8") as f:
         rows = list(csv.reader(f))
+    if not rows:
+        err("termbase.csv is empty")
+        return {}, 0, 0
     header, data = rows[0], rows[1:]
     if header != EXPECTED_CSV_HEADER:
         err(f"termbase header mismatch: {header}")
-        return 0
+        return {}, 0, 0
     idx = {c: i for i, c in enumerate(header)}
     zh = re.compile(r"[\u4e00-\u9fff]")
     ids = []
     pref_map = {}
     valid = []
+    entries = {}
+    n_active = n_retired = 0
     for lineno, r in enumerate(data, start=2):
         if len(r) != len(header):
             err(f"termbase line {lineno}: {len(r)} columns, expected {len(header)}")
@@ -110,6 +140,9 @@ def check_termbase():
             err(f"termbase {eid}: unknown scope '{r[idx['scope']]}'")
         if r[idx["compliance_level"]] not in CANONICAL_COMPLIANCE:
             err(f"termbase {eid}: unknown compliance_level '{r[idx['compliance_level']]}'")
+        status = r[idx["status"]]
+        if status not in STATUS_VALUES:
+            err(f"termbase {eid}: unknown status '{status}' (expected ACTIVE / RETIRED)")
         for col in header:
             if col in OPTIONAL_CSV_FIELDS:
                 continue
@@ -126,6 +159,29 @@ def check_termbase():
             warn(f"termbase {eid}: variant_en identical to preferred_en ('{r[idx['preferred_en']]}')")
         for p in r[idx["preferred_en"]].split("/"):
             pref_map.setdefault(p.strip(), []).append(eid)
+
+        rd = r[idx["review_date"]]
+        review = None
+        if not re.fullmatch(r"\d{4}-\d{2}-\d{2}", rd):
+            err(f"termbase {eid}: invalid review_date '{rd}' (expected YYYY-MM-DD)")
+        else:
+            try:
+                review = datetime.date.fromisoformat(rd)
+            except ValueError:
+                err(f"termbase {eid}: invalid review_date '{rd}' (not a real date)")
+                review = None
+        if review and review > TODAY:
+            err(f"termbase {eid}: review_date {rd} is in the future")
+        entries[eid] = {
+            "compliance": r[idx["compliance_level"]],
+            "status": status,
+            "date": review,
+            "url": r[idx["source_url"]].strip(),
+        }
+        if status == "RETIRED":
+            n_retired += 1
+        else:
+            n_active += 1
 
     dups = sorted({x for x in ids if ids.count(x) > 1})
     if dups:
@@ -148,23 +204,64 @@ def check_termbase():
             base = fb.strip()
             if base and base in pref_map and eid not in pref_map[base]:
                 err(f"termbase conflict: '{base}' forbidden in {eid} but preferred in {pref_map[base]}")
-    return len(valid)
+    return entries, n_active, n_retired
 
 
 def check_rules_json():
-    with RULES.open(encoding="utf-8") as f:
-        rules = json.load(f)
+    """Returns (rules, rule_ids)."""
+    if not RULES.exists():
+        err("references/rules.json is missing")
+        return {}, set()
+    try:
+        with RULES.open(encoding="utf-8") as f:
+            rules = json.load(f)
+    except json.JSONDecodeError as e:
+        err(f"rules.json is not valid JSON: {e}")
+        return {}, set()
+
     codes = [d["code"] for d in rules.get("defect_types", [])]
     if codes != CANONICAL_DEFECT_CODES:
         err(f"rules.json defect_types mismatch: {codes}")
     levels = sorted(rules.get("compliance_levels", {}).keys())
     if levels != sorted(CANONICAL_COMPLIANCE):
         err(f"rules.json compliance_levels mismatch: {levels}")
+
+    rule_ids = set()
     for d in rules.get("defect_types", []):
         if "severity" in d:
             err(f"rules.json {d['code']}: legacy field 'severity' — rename to 'default_severity'")
         if d.get("default_severity") not in ("HIGH", "MEDIUM", "LOW"):
             err(f"rules.json {d['code']}: missing or invalid default_severity")
+        rid = d.get("rule_id", "")
+        if not re.fullmatch(r"R-DEF-\d{3}", rid):
+            err(f"rules.json {d['code']}: rule_id missing or malformed '{rid}' (expected R-DEF-###)")
+        if rid in rule_ids:
+            err(f"rules.json: duplicate rule_id '{rid}'")
+        rule_ids.add(rid)
+
+    for key, c in rules.get("layout_constraints", {}).items():
+        rid = c.get("rule_id", "")
+        if not re.fullmatch(r"R-LAY-\d{3}", rid):
+            err(f"rules.json layout '{key}': rule_id missing or malformed '{rid}' (expected R-LAY-###)")
+        if rid in rule_ids:
+            err(f"rules.json: duplicate rule_id '{rid}'")
+        rule_ids.add(rid)
+
+    gr = rules.get("global_rules")
+    if not isinstance(gr, list) or not gr:
+        err("rules.json: global_rules must be a non-empty list of R-GEN rules")
+    else:
+        for g in gr:
+            rid = g.get("rule_id", "")
+            if not re.fullmatch(r"R-GEN-\d{3}", rid):
+                err(f"rules.json global_rules: rule_id missing or malformed '{rid}' (expected R-GEN-###)")
+            for field in ("name", "statement", "spec_ref"):
+                if not str(g.get(field, "")).strip():
+                    err(f"rules.json global_rules {rid or '<no-id>'}: missing '{field}'")
+            if rid in rule_ids:
+                err(f"rules.json: duplicate rule_id '{rid}'")
+            rule_ids.add(rid)
+
     for d in rules.get("defect_types", []):
         pattern = d.get("typical_pattern", "")
         try:
@@ -177,7 +274,7 @@ def check_rules_json():
             if got != should_match:
                 kind = "false positive" if got else "false negative"
                 err(f"rules.json {d['code']} regex {kind}: {text!r} (match={got}, expected={should_match})")
-    return rules
+    return rules, rule_ids
 
 
 def parse_spec_layout():
@@ -219,15 +316,70 @@ def check_layout_consistency(rules):
             err(f"specification.md layout table missing component '{key}' (defined in rules.json)")
 
 
-def main():
-    n_terms = check_termbase()
-    rules = check_rules_json()
-    check_layout_consistency(rules)
+def check_governance(entries, rules):
+    gov = rules.get("governance", {})
+    swd = gov.get("stale_warning_days")
+    mmd = gov.get("mandatory_max_age_days")
+    if not isinstance(swd, int) or not isinstance(mmd, int) or swd <= 0 or mmd <= 0:
+        err("rules.json governance: stale_warning_days / mandatory_max_age_days must be positive integers")
+        return
+    for eid, e in entries.items():
+        if e["status"] != "ACTIVE":
+            continue  # retired entries are traceability placeholders only
+        if e["compliance"] == "MANDATORY":
+            if not e["url"]:
+                err(f"termbase {eid}: ACTIVE MANDATORY entry must carry a source_url to its regulator")
+            if e["date"] is None:
+                continue
+            age = (TODAY - e["date"]).days
+            if age > mmd:
+                err(f"termbase {eid}: MANDATORY entry review_date is {age} days old (> {mmd}) — "
+                    f"regulatory re-verification required")
+        elif e["date"] is not None:
+            age = (TODAY - e["date"]).days
+            if age > swd:
+                warn(f"termbase {eid}: review_date is {age} days old (> {swd}) — due for re-verification")
 
-    print(f"termbase entries: {n_terms}")
-    print(f"defect codes: {len(rules.get('defect_types', []))} · "
-          f"compliance levels: {len(rules.get('compliance_levels', {}))} · "
-          f"layout components: {len(rules.get('layout_constraints', {}))}")
+
+def check_citations(rule_ids, entries):
+    docs = [
+        ("references/specification.md", SPEC),
+        ("SKILL.md", SKILL),
+        ("examples/golden-case.md", GOLDEN),
+        ("README.md", README),
+    ]
+    for name, path in docs:
+        if not path.exists():
+            err(f"{name}: file is missing — citations cannot be validated")
+            continue
+        text = path.read_text(encoding="utf-8")
+        for rid in sorted(set(RULE_ID_RE.findall(text))):
+            if rid not in rule_ids:
+                err(f"{name}: cites unknown rule_id '{rid}' (not defined in rules.json)")
+        for eid in sorted(set(FIN_CITED_RE.findall(text))):
+            if eid not in entries:
+                err(f"{name}: cites termbase entry '{eid}' which does not exist")
+        for eid in sorted(set(FIN_PROPOSED_RE.findall(text))):
+            if eid in entries:
+                err(f"{name}: gap proposal '{eid} (proposed)' collides with an existing termbase entry — "
+                    f"update the example to the next free ID")
+
+
+def main():
+    entries, n_active, n_retired = check_termbase()
+    rules, rule_ids = check_rules_json()
+    if rules:
+        check_layout_consistency(rules)
+    if entries and rules:
+        check_governance(entries, rules)
+    check_citations(rule_ids, entries)
+
+    print(f"termbase entries: {n_active} active / {n_retired} retired")
+    if rules:
+        print(f"defect codes: {len(rules.get('defect_types', []))} · "
+              f"compliance levels: {len(rules.get('compliance_levels', {}))} · "
+              f"layout components: {len(rules.get('layout_constraints', {}))}")
+    print(f"rule IDs defined: {len(rule_ids)} (R-DEF / R-LAY / R-GEN)")
     print()
     if warnings:
         print(f"Warnings ({len(warnings)}):")
