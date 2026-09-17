@@ -38,11 +38,20 @@ SCOPE_VALUES = {
 # Desired regex behavior: (input, should_match). The suite encodes the contract
 # the patterns must satisfy; known violations fail the gate until fixed.
 REGEX_CASES = {
-    "TRUNCATION": [("Transf…", True), ("Pay Now", False)],
-    "LINE_BREAK": [("Transactio\nns", True), ("Pay Now", False), ("Bill", False), ("Pay", False)],
-    "MIXED_LANG": [("FPS快速支付Transfer", True), ("แอป Transfer", True), ("Pay Now", False)],
+    "TRUNCATION": [("Transf…", True), ("Pay Now", False), ("Cut-off Time 15:30", False)],
+    "LINE_BREAK": [
+        ("Transactio\nns", True),      # mid-word split, no hyphen
+        ("Transfer\nHistory", False),  # legit break at word boundary
+        ("Inter-\nnational", False),   # hyphen break is not a defect (spec section 4)
+        ("Pay Now", False), ("Bill", False), ("Pay", False),
+    ],
+    "MIXED_LANG": [
+        ("FPS快速支付Transfer", True), ("แอป Transfer", True), ("DuitNow 转账", True),
+        ("Pay Now", False),
+    ],
     "REDUNDANCY": [("Card Application", True), ("Apply", False)],
-    "FORMAT_GRAMMAR": [("1 accounts", True), ("12:30 PM", False), ("Note: this", False)],
+    "FORMAT_GRAMMAR": [("1 accounts", True), ("Account:Balance", True), ("12:30 PM", False), ("Note: this", False)],
+    "COMPLIANCE": [("Quick Pay", True), ("PayNow", False)],
     "PLACEHOLDER": [("{0} amount", True), ("100%", False), ("${user}", True)],
 }
 
@@ -60,8 +69,12 @@ COMPONENT_KEY_MAP = {
 EXPECTED_CSV_HEADER = [
     "entry_id", "scope", "domain", "context_component", "definition",
     "preferred_en", "variant_en", "forbidden_en", "preferred_zh_cn",
-    "preferred_zh_hk", "compliance_level", "source_authority",
+    "preferred_zh_hk", "compliance_level", "source_authority", "note",
 ]
+
+# Fields that may legitimately be blank: a term can have no variants,
+# no forbidden forms (context restrictions live in `note`), or no note.
+OPTIONAL_CSV_FIELDS = {"variant_en", "forbidden_en", "note"}
 
 
 def err(msg):
@@ -98,8 +111,10 @@ def check_termbase():
         if r[idx["compliance_level"]] not in CANONICAL_COMPLIANCE:
             err(f"termbase {eid}: unknown compliance_level '{r[idx['compliance_level']]}'")
         for col in header:
+            if col in OPTIONAL_CSV_FIELDS:
+                continue
             if not r[idx[col]].strip():
-                err(f"termbase {eid}: empty field '{col}'")
+                err(f"termbase {eid}: empty required field '{col}'")
         for col in ("preferred_en", "variant_en", "forbidden_en"):
             if zh.search(r[idx[col]]):
                 err(
@@ -145,6 +160,11 @@ def check_rules_json():
     levels = sorted(rules.get("compliance_levels", {}).keys())
     if levels != sorted(CANONICAL_COMPLIANCE):
         err(f"rules.json compliance_levels mismatch: {levels}")
+    for d in rules.get("defect_types", []):
+        if "severity" in d:
+            err(f"rules.json {d['code']}: legacy field 'severity' — rename to 'default_severity'")
+        if d.get("default_severity") not in ("HIGH", "MEDIUM", "LOW"):
+            err(f"rules.json {d['code']}: missing or invalid default_severity")
     for d in rules.get("defect_types", []):
         pattern = d.get("typical_pattern", "")
         try:
