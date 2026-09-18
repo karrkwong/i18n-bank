@@ -82,3 +82,4 @@ git clone https://github.com/karrkwong/i18n-bank <project>/.trae/skills/i18n-ban
 - [x] Phase 3 — quality hardening: governance fields (status / review_date / source_url), stable rule IDs (R-DEF / R-LAY / R-GEN), TERMBASE_GAP format, citation gate
 - [x] Phase 4 — coverage expansion: Bills / FX / Investments termbase domains (48 entries), market format rules (R-FMT), quality metrics (R-MET)
 - [x] Post-release — governance review methodology (spec 7.3) + authority source index; fix MAS EIR citation (Notice 637 → 635)
+- [x] Governance review batch 1 — 5 gap proposals → 6 ACTIVE entries (FIN-TRF-016/017, FIN-ACT-006~009); review overturned 2 initial suggestions (Auto Sweep → Standing Instruction, E-Statement → eStatement) and split statement channels into two entries
