@@ -22,7 +22,7 @@ FIN-CRD-003,REGIONAL_SEA,Cards,Service,信用卡或账单分期付款业务,Inst
 FIN-CRD-004,GLOBAL,Cards,Form / Security,卡背面安全验证码,CVV / CVC,CVV2; CVC2,Card Security Code,安全码,安全碼,STANDARD,Visa/Mastercard 国际卡组织标准,https://www.visa.com,ACTIVE,2026-09-18,Card Security Code 过长，紧凑表单场景用 CVV / CVC
 FIN-CRD-005,GLOBAL,Cards,Billing,信用卡每期最低还款额,Minimum Payment,Min Payment,Lowest Repayment,最低还款额,最低還款額,STANDARD,国际卡组织清算及银行条款标准,,ACTIVE,2026-09-18,
 FIN-CRD-006,GLOBAL,Cards,Service,信用卡预借现金/提现业务,Cash Advance,,Credit Card Withdraw,现金预借/提现,現金透支/提取,STANDARD,国际信用卡通用业务标准,,ACTIVE,2026-09-18,无变体
-FIN-LON-001,REGIONAL_SEA,Loans,Disclosure,贷款年化有效实际利率,EIR / APR,Effective Interest Rate,Interest Rate,实际年利率,實際年利率,MANDATORY,MAS Notice 637 / BNM Consumer Protection Policy (强制披露),https://www.mas.gov.sg,ACTIVE,2026-09-18,未标注年化/有效的裸 Interest Rate 涉嫌误导性披露，须用 EIR/APR 并升级合规复审 (MAS Notice 637)
+FIN-LON-001,REGIONAL_SEA,Loans,Disclosure,贷款年化有效实际利率,EIR / APR,Effective Interest Rate,Interest Rate,实际年利率,實際年利率,MANDATORY,MAS Notice 635 (Unsecured Credit Facilities) / BNM Consumer Protection Policy (强制披露),https://www.mas.gov.sg/regulation/notices/notice-635,ACTIVE,2026-09-18,未标注年化/有效的裸 Interest Rate 涉嫌误导性披露，须用 EIR/APR 并升级合规复审 (MAS Notice 635)
 FIN-LON-002,REGIONAL_SEA,Loans,Service,循环信用贷款/个人透支额度,Revolving Loan,Overdraft Facility,Credit Line,循环贷款,循環貸款,STANDARD,巴塞尔协议与商业银行业务分类,https://www.bis.org,ACTIVE,2026-09-18,
 FIN-LON-003,GLOBAL,Loans,Grid Tile / CTA,还款操作动词,Repay,Make Repayment,Repay Immediately,还款,還款,GENERAL,UI/UX 一字精炼原则,,ACTIVE,2026-09-18,Repay Immediately 冗长，紧凑 CTA 场景用 Repay
 FIN-SEC-001,LOCAL_SG,Security,Identity,新加坡国民及永久居民身份证号,NRIC,NRIC No.,ID Card; National ID,身份证号,身份證號,MANDATORY,新加坡移民与关卡局 (ICA) / MAS 监管规范,https://www.ica.gov.sg,ACTIVE,2026-09-18,

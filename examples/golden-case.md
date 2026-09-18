@@ -18,7 +18,7 @@ Aligned example for report output. Match this structure; do not copy the content
 |---|-----------|--------------|--------|----------|-----|------------|-----------|
 | 1 | Cards grid tile 01 | Card Application | REDUNDANCY | Medium | Apply | [基础表达] GENERAL | R-GEN-002 context omission: repeats parent section "Cards"; termbase FIN-CRD-001 preferred_en = "Apply"; fits R-LAY-002 grid_tile budget |
 | 2 | Cards grid tile 02 | Card Activation | REDUNDANCY | Medium | Activate | [基础表达] GENERAL | R-GEN-002; termbase FIN-CRD-002 preferred_en = "Activate"; fits R-LAY-002 grid_tile budget |
-| 3 | Loan promo list row | Personal loan from 2.5% interest rate | COMPLIANCE | High | Personal loan from 2.5% EIR p.a. (pending compliance confirmation) | [合规预警] ALERT | R-DEF-006: "Interest rate" without effective-rate qualification risks misleading disclosure; MAS Notice 637 requires EIR; termbase FIN-LON-001 — escalate, do not finalize wording in LQA |
+| 3 | Loan promo list row | Personal loan from 2.5% interest rate | COMPLIANCE | High | Personal loan from 2.5% EIR p.a. (pending compliance confirmation) | [合规预警] ALERT | R-DEF-006: "Interest rate" without effective-rate qualification risks misleading disclosure; MAS Notice 635 requires EIR; termbase FIN-LON-001 — escalate, do not finalize wording in LQA |
 | 4 | Card detail balance row | SGD1,234.50 | FORMAT_GRAMMAR | Medium | S$1,234.50 | [基础表达] GENERAL | R-DEF-005: no separator space between ISO code and amount (R-FMT-006); fix adopts the SG symbol style per R-FMT-001 |
 
 ## Summary

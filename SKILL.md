@@ -15,6 +15,7 @@ Production-grade localization QA for banking & fintech app UI copy
 | `references/rules.json` | Numeric SSOT — defect codes, compliance levels, layout budgets, stable rule IDs (`R-DEF` / `R-LAY` / `R-GEN` / `R-FMT` / `R-MET`), market format rules, quality metrics, governance thresholds. Every limit cited in a report comes from here. |
 | `references/termbase.csv` | Terminology SSOT — preferred / variant / forbidden terms with regulatory sources and governance fields (`status`, `review_date`, `source_url`). |
 | `references/specification.md` | Human-readable judgment logic. Explains *why*; never overrides the SSOTs on numbers. |
+| `references/authority-index.md` | Authority source index — per-market navigation entries (regulator, document families, entry URLs) for governance review and MANDATORY re-verification. Index only; full texts stay at the source. |
 | `examples/golden-case.md` | Golden example for output alignment. |
 | `validate.py` | Release gate: cross-file consistency + regex regression. |
 
@@ -71,4 +72,5 @@ Markdown table, 8 columns, in order:
 - Termbase `entry_id`s are permanent; never reuse a retired ID. Retired entries keep `RETIRED` status in place for traceability — never delete them.
 - Gap proposals live in reports only; the working group adopts them as `ACTIVE` entries after review.
 - Re-verify MANDATORY entries within `governance.mandatory_max_age_days` (the gate blocks stale ones); other ACTIVE entries trigger a warning past `stale_warning_days`.
+- Governance review follows specification.md section 7.3: navigate from `references/authority-index.md`, verify against primary instruments, and record document-level URLs (never site homepages) in `source_url`.
 - Add a regression case to `validate.py` for every fixed false positive / false negative.

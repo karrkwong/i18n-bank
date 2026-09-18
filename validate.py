@@ -15,7 +15,8 @@ Validates asset integrity before any change is released:
   4. governance    — review freshness (stale warning / MANDATORY re-verify);
                      ACTIVE MANDATORY entries must link to their regulator
   5. citations     — rule IDs and termbase entry IDs referenced by the docs
-                     (specification.md / SKILL.md / golden-case.md / README.md)
+                     (specification.md / authority-index.md / SKILL.md /
+                     golden-case.md / README.md)
                      must resolve to defined assets; "(proposed)" gap IDs
                      must not collide with existing entries
 
@@ -32,6 +33,7 @@ ROOT = Path(__file__).resolve().parent
 TERMBASE = ROOT / "references" / "termbase.csv"
 RULES = ROOT / "references" / "rules.json"
 SPEC = ROOT / "references" / "specification.md"
+AUTHORITY_INDEX = ROOT / "references" / "authority-index.md"
 SKILL = ROOT / "SKILL.md"
 GOLDEN = ROOT / "examples" / "golden-case.md"
 README = ROOT / "README.md"
@@ -392,6 +394,7 @@ def check_governance(entries, rules):
 def check_citations(rule_ids, entries):
     docs = [
         ("references/specification.md", SPEC),
+        ("references/authority-index.md", AUTHORITY_INDEX),
         ("SKILL.md", SKILL),
         ("examples/golden-case.md", GOLDEN),
         ("README.md", README),
