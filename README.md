@@ -3,6 +3,47 @@
 Production-grade i18n / localization QA skill for banking & fintech app UI copy
 across SG / MY / HK / TH / ID markets (mobile, H5, mini-program).
 
+## How it works
+
+In plain words:
+
+1. **You feed it screenshots or a string table.** Red boxes on screenshots mark the suspect strings (or you provide `key, source, target, locale` rows), plus two pieces of context: target market and UI language.
+2. **It figures out what each string is.** A tab, a grid tile, a dialog — every component type has its own character budget in `rules.json`. The same words can be fine on a page header and broken on a grid tile.
+3. **It judges words, not just strings.** Each suspect term is looked up by term + component + market scope — never by bare word match. The termbase knows "Apply" is the right grid-tile word under a "Cards" section, and "Card Application" is redundant there.
+4. **It flags real defects.** Seven defect types: truncation, mixed language, redundancy, grammar/format, compliance risk, placeholders, line breaks. Amounts and dates are judged against per-market format rules — Thai UIs use Buddhist Era years, Indonesian uses `1.500.000,00` separators.
+5. **It proposes fixes that actually fit — and never oversteps.** Every fix must fit the component budget and use the preferred term. Anything compliance-sensitive (e.g. interest-rate disclosure) is routed to human compliance review; terms the termbase doesn't cover go into a gap table for governance review. Nothing sensitive is silently rewritten.
+6. **You get a standard report.** An 8-column findings table with stable rule citations, plus six quality metrics (defect density, severity distribution, first-pass rate...). Same shape every time, so results are comparable across teams and runs.
+
+## Judgment priority & sources
+
+**Which asset wins** (when documents disagree):
+
+| Priority | Asset | Role |
+|---|---|---|
+| 1 | `rules.json` / `termbase.csv` | Numeric SSOT — every budget, threshold and term lives here |
+| 2 | `specification.md` | Explains the why; never overrides the SSOTs |
+
+**Which term wins** (terminology arbitration): `LOCAL_XX` > `REGIONAL_SEA` > `GLOBAL`, among `ACTIVE` entries, judged on the (term, component, scope) triple — never a bare term match.
+
+**Where terms come from:**
+
+| Level | Source | Examples | Discipline |
+|---|---|---|---|
+| MANDATORY | Regulators, statutes, scheme rules | PayNow (MAS / ABS), FPS (HKMA / HKICL), CPF, EIR disclosure (MAS Notice 635) | Official wording locked; document-level source URL required |
+| STANDARD | Industry standards | IBAN (ISO 13616), BIC (ISO 9362), card-scheme terms | Follow the standard |
+| GENERAL | SEA UI/UX conventions | Apply, History, Favourite (en-GB) | Editorial rules in the spec |
+
+Verification navigation: `references/authority-index.md` · methodology: `specification.md` § 7.3.
+
+## Why it's rigorous
+
+- **Single source of truth.** Every budget, threshold and default lives in exactly one file; the spec explains, never overrides.
+- **A release gate, not a promise.** `validate.py` must be green before any change ships: schema closure, ID discipline, cross-file consistency, governance freshness, citation resolution, format-rule / metric schemas, and a regex regression suite where every historical false positive lives on as a test case.
+- **Citations that resolve.** Every finding cites a stable rule ID (`R-DEF` / `R-LAY` / `R-GEN` / `R-FMT` / `R-MET`) or termbase entry; the gate verifies every referenced ID actually exists. Dangling references block the release.
+- **MANDATORY means verifiable.** Each entry carries a document-level URL to a regulator page. The process catching its own error: an early version cited MAS Notice 637 for EIR disclosure; verification against primary sources showed 637 is the capital-adequacy rule — the correct instrument is Notice 635, and the fix is in the commit history.
+- **Nothing silently expires.** MANDATORY entries must be re-verified within 365 days or the gate blocks; retired entry IDs are never reused; every entry carries status, review date and source authority.
+- **Honest gaps.** Uncovered terms become TERMBASE_GAP proposals for governance review (spec § 7.3 — the "citable instrument test"), never invented straight into the termbase.
+
 ## Layout
 
 | Path | Role |
