@@ -8,9 +8,9 @@ across SG / MY / HK / TH / ID markets (mobile, H5, mini-program).
 In plain words:
 
 1. **You feed it screenshots or a string table.** Red boxes on screenshots mark the suspect strings (or you provide `key, source, target, locale` rows), plus two pieces of context: target market and UI language.
-2. **It figures out what each string is.** A tab, a grid tile, a dialog — every component type has its own character budget in `rules.json`. The same words can be fine on a page header and broken on a grid tile.
+2. **It figures out what each string is.** A tab, a grid tile, a dialog — every component type has its own refinement budget in `rules.json` and a physical truncation threshold per design-system variant in `references/layout-thresholds.json`. The same words can be fine on a page header and broken on a grid tile.
 3. **It judges words, not just strings.** Each suspect term is looked up by term + component + market scope — never by bare word match. The termbase knows "Apply" is the right grid-tile word under a "Cards" section, and "Card Application" is redundant there.
-4. **It flags real defects.** Seven defect types: truncation, mixed language, redundancy, grammar/format, compliance risk, placeholders, line breaks. Amounts and dates are judged against per-market format rules — Thai UIs use Buddhist Era years, Indonesian uses `1.500.000,00` separators.
+4. **It flags real defects.** Seven defect types: truncation, mixed language, redundancy, grammar/format, compliance risk, placeholders, line breaks. Amounts and dates are judged against per-market format rules — Thai UIs use Buddhist Era years, Indonesian uses `1.500.000,00` separators. Truncation findings are cross-checked against DS physical capacity: strings that fit the design system but still truncate are implementation deviations, routed to development with both numbers cited.
 5. **It proposes fixes that actually fit — and never oversteps.** Every fix must fit the component budget and use the preferred term. Anything compliance-sensitive (e.g. interest-rate disclosure) is routed to human compliance review; terms the termbase doesn't cover go into a gap table for governance review. Nothing sensitive is silently rewritten.
 6. **You get a standard report.** An 8-column findings table with stable rule citations, plus six quality metrics (defect density, severity distribution, first-pass rate...). Same shape every time, so results are comparable across teams and runs.
 
@@ -20,7 +20,7 @@ In plain words:
 
 | Priority | Asset | Role |
 |---|---|---|
-| 1 | `rules.json` / `termbase.csv` | Numeric SSOT — every budget, threshold and term lives here |
+| 1 | `rules.json` / `termbase.csv` / `layout-thresholds.json` | SSOTs — every budget, threshold, capacity and term lives here |
 | 2 | `specification.md` | Explains the why; never overrides the SSOTs |
 
 **Which term wins** (terminology arbitration): `LOCAL_XX` > `REGIONAL_SEA` > `GLOBAL`, among `ACTIVE` entries, judged on the (term, component, scope) triple — never a bare term match.
@@ -40,6 +40,7 @@ Verification navigation: `references/authority-index.md` · methodology: `specif
 - **Single source of truth.** Every budget, threshold and default lives in exactly one file; the spec explains, never overrides.
 - **A release gate, not a promise.** `validate.py` must be green before any change ships: schema closure, ID discipline, cross-file consistency, governance freshness, citation resolution, format-rule / metric schemas, and a regex regression suite where every historical false positive lives on as a test case.
 - **Citations that resolve.** Every finding cites a stable rule ID (`R-DEF` / `R-LAY` / `R-GEN` / `R-FMT` / `R-MET`) or termbase entry; the gate verifies every referenced ID actually exists. Dangling references block the release.
+- **Dual-layer layout budgets.** Refinement guidance (how long good copy should be) is separated from DS physical capacity (where the design system says it truncates); the gate cross-checks every guidance budget against mapped variants, so a recommended fix can never exceed what a component physically holds. When the app's rendering contradicts the DS, reports carry both numbers and route the deviation to development instead of blaming the copy.
 - **MANDATORY means verifiable.** Each entry carries a document-level URL to a regulator page. The process catching its own error: an early version cited MAS Notice 637 for EIR disclosure; verification against primary sources showed 637 is the capital-adequacy rule — the correct instrument is Notice 635, and the fix is in the commit history.
 - **Nothing silently expires.** MANDATORY entries must be re-verified within 365 days or the gate blocks; retired entry IDs are never reused; every entry carries status, review date and source authority.
 - **Honest gaps.** Uncovered terms become TERMBASE_GAP proposals for governance review (spec § 7.3 — the "citable instrument test"), never invented straight into the termbase.
@@ -49,12 +50,13 @@ Verification navigation: `references/authority-index.md` · methodology: `specif
 | Path | Role |
 |------|------|
 | `SKILL.md` | Skill entry: trigger conditions, workflow, I/O contract |
-| `references/rules.json` | Numeric SSOT: defect codes, compliance levels, layout budgets, stable rule IDs, market format rules, quality metrics, governance thresholds |
+| `references/rules.json` | Numeric SSOT: defect codes, compliance levels, layout budgets (guidance layer), stable rule IDs, market format rules, quality metrics, governance thresholds |
+| `references/layout-thresholds.json` | Physical capacity SSOT: per-variant character limits derived from the SuperApp Design System (px math, baseline iPhone X/Xs) |
 | `references/specification.md` | Human-readable judgment logic and rationale |
 | `references/authority-index.md` | Authority source index: per-market regulators, document families, entry URLs (index only) |
 | `references/termbase.csv` | Terminology SSOT: preferred / variant / forbidden terms + governance fields |
 | `examples/golden-case.md` | Golden example for output alignment |
-| `validate.py` | Release gate: consistency, regex regression, governance, citation, format-rule and metric schema checks |
+| `validate.py` | Release gate: consistency, regex regression, governance, citation, format-rule, metric and threshold-schema checks |
 
 ## Install
 
@@ -83,3 +85,4 @@ git clone https://github.com/karrkwong/i18n-bank <project>/.trae/skills/i18n-ban
 - [x] Phase 4 — coverage expansion: Bills / FX / Investments termbase domains (48 entries), market format rules (R-FMT), quality metrics (R-MET)
 - [x] Post-release — governance review methodology (spec 7.3) + authority source index; fix MAS EIR citation (Notice 637 → 635)
 - [x] Governance review batch 1 — 5 gap proposals → 6 ACTIVE entries (FIN-TRF-016/017, FIN-ACT-006~009); review overturned 3 initial suggestions (Auto Sweep → Standing Instruction, Payroll Service → Salary Crediting, E-Statement → eStatement) and split statement channels into two entries; golden case B added to demonstrate post-review arbitration (forbidden / variant / de-escalation findings)
+- [x] Dual-layer layout budgets — SuperApp DS character-threshold spec integrated as physical capacity SSOT (references/layout-thresholds.json); Dialog (R-LAY-007) / Toast (R-LAY-008) split; DS-deviation routing protocol; gate cross-checks (schema, ref resolution, budget vs capacity)

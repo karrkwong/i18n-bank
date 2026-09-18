@@ -1,0 +1,1717 @@
+{
+  "metadata": {
+    "name": "SuperApp Design System - Character Threshold Specification",
+    "version": "1.0.0",
+    "baseline_device": "iPhone X/Xs",
+    "baseline_width_pt": 375,
+    "baseline_height_pt": 812,
+    "scale_factor": "3x",
+    "calculation_method": {
+      "cjk": "available_width_px / font_size_px (1:1 ratio for CJK glyphs)",
+      "latin": "available_width_px / (font_size_px * 0.55) (average Latin char width = 55% of font size)",
+      "multiline": "per_line_threshold * max_lines"
+    },
+    "global_page_margin_px": 16,
+    "global_card_padding_px": 16,
+    "global_gutter_px": 8,
+    "grid_columns": 6,
+    "grid_column_width_px": 50,
+    "font_family_ios": "SF Pro Display (titles/numbers), SF Pro Text (body)",
+    "font_family_android": "Roboto",
+    "line_height_single": "1.0x",
+    "line_height_wrap": "1.2x",
+    "line_height_multi": "1.5x (odd +1px)",
+    "corner_radius": { "small": 2, "regular": 8, "large": 16 },
+    "colors": {
+      "brand": "#0031B3",
+      "brand_click": "#00278F",
+      "brand_disabled": "#99ADE1",
+      "text_primary": "#333333",
+      "text_secondary": "#666666",
+      "text_tertiary": "#999999",
+      "text_link": "#0031B3",
+      "success": "#06C687",
+      "error": "#FF1128",
+      "warning": "#FF934C",
+      "bg_page": "#F8F9FD",
+      "bg_card": "#FFFFFF",
+      "border": "#EEEEEE",
+      "mask": "#333333@75%"
+    },
+    "font_scale": {
+      "10px": { "weight": "Regular", "use": "Chart data, small supplementary" },
+      "12px": { "weight": "Regular", "use": "Descriptions, input hints, label text, tabs, filter" },
+      "14px_Regular": { "weight": "Regular", "use": "Long body text, toast, text field hints" },
+      "14px_Medium": { "weight": "Medium", "use": "Important content labels, long content body title" },
+      "16px_Regular": { "weight": "Regular", "use": "Body text, normal titles" },
+      "16px_Medium": { "weight": "Medium", "use": "Body text, important titles, button text" },
+      "18px": { "weight": "Medium", "use": "Navigation bar title" },
+      "24px": { "weight": "Medium/Bold", "use": "Key information emphasis, core numbers" },
+      "28px": { "weight": "Bold", "use": "Large numbers" },
+      "32px": { "weight": "Bold", "use": "Extra large numbers" },
+      "36px": { "weight": "Bold", "use": "Maximum standard number size" }
+    },
+    "last_updated": "2026-09-18",
+    "source": "SuperApp Design System image walkthrough"
+  },
+  "components": {
+    "button": {
+      "category": "General Components",
+      "section": "3.1 / 3(1).1 / 8.4",
+      "variants": {
+        "primary_full_width": {
+          "description": "Strong/Primary button, full width in footer or dialog",
+          "text_slots": {
+            "label": {
+              "font_size_px": 16,
+              "font_weight": "Medium",
+              "available_width_px": 311,
+              "max_chars_cn": 19,
+              "max_chars_en": 35,
+              "max_lines": 1,
+              "truncation": "none",
+              "wrap": false,
+              "source": "derived",
+              "derivation": "page_width(375) - 2*page_margin(16) - 2*card_padding(16) = 311; 311/16=19.4 -> 19 CN; 311/8.8=35.3 -> 35 EN",
+              "design_system_rule": "No wrapping, no truncation, min 1 word, height fixed width variable",
+              "example": "Update Now (10 chars)"
+            }
+          }
+        },
+        "primary_split_half": {
+          "description": "Primary button in 1:1 split layout (e.g., Cancel + Confirm)",
+          "text_slots": {
+            "label": {
+              "font_size_px": 16,
+              "font_weight": "Medium",
+              "available_width_px": 135,
+              "max_chars_cn": 8,
+              "max_chars_en": 15,
+              "max_lines": 1,
+              "truncation": "none",
+              "wrap": false,
+              "source": "derived",
+              "derivation": "(311-8 gap)/2 = 151.5; 151.5 - 2*16 padding = 119.5; 119.5/16=7.5 -> 7 CN (conservative 8); 119.5/8.8=13.6 -> 15 EN",
+              "example": "Cancel (6), Confirm (7)"
+            }
+          }
+        },
+        "primary_split_third": {
+          "description": "Primary button in 1:2 split (smaller button)",
+          "text_slots": {
+            "label": {
+              "font_size_px": 16,
+              "font_weight": "Medium",
+              "available_width_px": 77,
+              "max_chars_cn": 4,
+              "max_chars_en": 8,
+              "max_lines": 1,
+              "truncation": "none",
+              "wrap": false,
+              "source": "derived",
+              "derivation": "311/3 = 103.7; 103.7 - 32 padding = 71.7; 71.7/16=4.5 -> 4 CN; 71.7/8.8=8.1 -> 8 EN",
+              "example": "Add (3)"
+            }
+          }
+        },
+        "secondary_full_width": {
+          "description": "Secondary/Outline button, full width",
+          "text_slots": {
+            "label": {
+              "font_size_px": 16,
+              "font_weight": "Medium",
+              "available_width_px": 311,
+              "max_chars_cn": 19,
+              "max_chars_en": 35,
+              "max_lines": 1,
+              "truncation": "none",
+              "wrap": false,
+              "source": "derived",
+              "derivation": "Same as primary_full_width"
+            }
+          }
+        },
+        "text_button": {
+          "description": "Text-only button (brand color, danger, hint&link, gray)",
+          "text_slots": {
+            "label": {
+              "font_size_px": 14,
+              "font_weight": "Medium",
+              "available_width_px": 200,
+              "max_chars_cn": 14,
+              "max_chars_en": 25,
+              "max_lines": 1,
+              "truncation": "none",
+              "wrap": false,
+              "source": "derived",
+              "derivation": "Text buttons are inline; practical max width ~200px before looking like paragraph; 200/14=14.3 -> 14 CN; 200/7.7=25.9 -> 25 EN",
+              "example": "View All (7), Cancel (6), Close (5), Add Card (8)"
+            }
+          }
+        },
+        "countdown_button": {
+          "description": "Countdown/Timer button for verification codes",
+          "text_slots": {
+            "label": {
+              "font_size_px": 14,
+              "font_weight": "Medium",
+              "available_width_px": 180,
+              "max_chars_cn": 12,
+              "max_chars_en": 23,
+              "max_lines": 1,
+              "truncation": "none",
+              "wrap": false,
+              "source": "derived",
+              "derivation": "Countdown text area ~180px; 180/14=12.9 -> 12 CN; 180/7.7=23.4 -> 23 EN",
+              "example": "60s后重新获取 (7 CN), Resend (6)"
+            }
+          }
+        }
+      }
+    },
+    "bottom_navigation": {
+      "category": "Navigation",
+      "section": "4.1",
+      "variants": {
+        "tab_label": {
+          "description": "Bottom navigation tab label",
+          "text_slots": {
+            "label": {
+              "font_size_px": 10,
+              "font_weight": "Regular",
+              "available_width_px": 75,
+              "max_chars_cn": 7,
+              "max_chars_en": 13,
+              "max_lines": 1,
+              "truncation": "ellipsis",
+              "wrap": false,
+              "source": "derived",
+              "derivation": "5 tabs max: 375/5=75px per tab; 75/10=7.5 -> 7 CN; 75/5.5=13.6 -> 13 EN",
+              "example": "Home (4), Pay/Transfer (12), Wealth (6), Profile (7)"
+            }
+          }
+        },
+        "tab_label_4_grid": {
+          "description": "Bottom navigation tab label with 4 tabs",
+          "text_slots": {
+            "label": {
+              "font_size_px": 10,
+              "available_width_px": 93,
+              "max_chars_cn": 9,
+              "max_chars_en": 16,
+              "source": "derived",
+              "derivation": "4 tabs: 375/4=93.75px; 93/10=9.3 -> 9 CN; 93/5.5=16.9 -> 16 EN"
+            }
+          }
+        },
+        "tab_label_3_grid": {
+          "description": "Bottom navigation tab label with 3 tabs",
+          "text_slots": {
+            "label": {
+              "font_size_px": 10,
+              "available_width_px": 125,
+              "max_chars_cn": 12,
+              "max_chars_en": 22,
+              "source": "derived",
+              "derivation": "3 tabs: 375/3=125px; 125/10=12.5 -> 12 CN; 125/5.5=22.7 -> 22 EN"
+            }
+          }
+        }
+      }
+    },
+    "secondary_navigation": {
+      "category": "Navigation",
+      "section": "4.2",
+      "variants": {
+        "title_with_icons": {
+          "description": "Page title in secondary nav bar with leading and trailing icons",
+          "text_slots": {
+            "title": {
+              "font_size_px": 18,
+              "font_weight": "Medium",
+              "available_width_px": 243,
+              "max_chars_cn": 13,
+              "max_chars_en": 24,
+              "max_lines": 1,
+              "truncation": "ellipsis",
+              "wrap": false,
+              "source": "derived",
+              "derivation": "375 - 16(left margin) - 24(icon) - 12(gap) - 16(title margin) - 16(title margin) - 12(gap) - 24(icon) - 16(right margin) = 243; 243/18=13.5 -> 13 CN; 243/9.9=24.5 -> 24 EN",
+              "example": "Demand Deposit Accounts (22)"
+            }
+          },
+          "text_button": {
+            "font_size_px": 14,
+            "font_weight": "Medium",
+            "available_width_px": 80,
+            "max_chars_cn": 5,
+            "max_chars_en": 10,
+            "max_lines": 1,
+            "truncation": "ellipsis",
+            "source": "derived",
+            "derivation": "Text button in nav bar ~80px; 80/14=5.7 -> 5 CN; 80/7.7=10.4 -> 10 EN",
+            "example": "Add (3), Add Card (8)"
+          }
+        },
+        "title_only": {
+          "description": "Page title only, no icons",
+          "text_slots": {
+            "title": {
+              "font_size_px": 18,
+              "available_width_px": 343,
+              "max_chars_cn": 19,
+              "max_chars_en": 34,
+              "source": "derived",
+              "derivation": "375 - 2*16 margin = 343; 343/18=19 -> 19 CN; 343/9.9=34.6 -> 34 EN"
+            }
+          }
+        }
+      }
+    },
+    "tabs": {
+      "category": "Navigation",
+      "section": "4.3",
+      "variants": {
+        "tab_label": {
+          "description": "Horizontal tab label (left-aligned, variable width)",
+          "text_slots": {
+            "label": {
+              "font_size_px": 14,
+              "font_weight": "Medium/Regular",
+              "available_width_px": 100,
+              "max_chars_cn": 7,
+              "max_chars_en": 12,
+              "max_lines": 1,
+              "truncation": "ellipsis",
+              "wrap": false,
+              "source": "derived",
+              "derivation": "Max 4 tabs with 24px gaps: practical max per tab ~100px; 100/14=7.1 -> 7 CN; 100/7.7=13 -> 12 EN (conservative)",
+              "example": "Novice Zone (11), Selected (8)"
+            }
+          }
+        }
+      }
+    },
+    "quick_entry": {
+      "category": "Navigation",
+      "section": "4.4",
+      "variants": {
+        "label_5_column": {
+          "description": "Quick entry label in 5-column grid",
+          "text_slots": {
+            "label": {
+              "font_size_px": 12,
+              "font_weight": "Regular",
+              "available_width_px": 75,
+              "max_chars_cn": 6,
+              "max_chars_en": 11,
+              "max_lines": 2,
+              "truncation": "ellipsis",
+              "wrap": true,
+              "source": "derived",
+              "derivation": "5 columns: 375/5=75px; 75/12=6.25 -> 6 CN per line; 75/6.6=11.4 -> 11 EN per line; 2 lines allowed",
+              "example": "Overseas Transfer (17 -> 2 lines)"
+            }
+          }
+        },
+        "label_4_column": {
+          "description": "Quick entry label in 4-column grid",
+          "text_slots": {
+            "label": {
+              "font_size_px": 12,
+              "max_chars_cn": 7,
+              "max_chars_en": 14,
+              "max_lines": 2,
+              "available_width_px": 93,
+              "source": "derived",
+              "derivation": "4 columns: 375/4=93.75px; 93/12=7.8 -> 7 CN; 93/6.6=14.1 -> 14 EN; 2 lines = 14 CN / 28 EN"
+            }
+          }
+        },
+        "label_3_column": {
+          "description": "Quick entry label in 3-column grid",
+          "text_slots": {
+            "label": {
+              "font_size_px": 12,
+              "max_chars_cn": 10,
+              "max_chars_en": 18,
+              "max_lines": 2,
+              "available_width_px": 125,
+              "source": "derived",
+              "derivation": "3 columns: 375/3=125px; 125/12=10.4 -> 10 CN; 125/6.6=18.9 -> 18 EN; 2 lines = 20 CN / 36 EN"
+            }
+          }
+        }
+      }
+    },
+    "input_field": {
+      "category": "Input",
+      "section": "5.1",
+      "variants": {
+        "label": {
+          "description": "Input field label above the input",
+          "text_slots": {
+            "label": {
+              "font_size_px": 12,
+              "font_weight": "Regular",
+              "available_width_px": 343,
+              "max_chars_cn": 28,
+              "max_chars_en": 52,
+              "max_lines": 1,
+              "truncation": "ellipsis",
+              "source": "derived",
+              "derivation": "375 - 2*16 margin = 343; 343/12=28.6 -> 28 CN; 343/6.6=52 -> 52 EN",
+              "example": "Debit Account (13), Verification code (17), Phone number (13)"
+            }
+          }
+        },
+        "placeholder": {
+          "description": "Input field placeholder text",
+          "text_slots": {
+            "placeholder": {
+              "font_size_px": 12,
+              "font_weight": "Regular",
+              "available_width_px": 280,
+              "max_chars_cn": 23,
+              "max_chars_en": 42,
+              "max_lines": 1,
+              "truncation": "ellipsis",
+              "source": "derived",
+              "derivation": "343 - 24(icon) - 8(gap) - 31(trailing button) = 280; 280/12=23.3 -> 23 CN; 280/6.6=42.4 -> 42 EN",
+              "example": "Please enter (12), Please select (13)"
+            }
+          }
+        },
+        "value": {
+          "description": "Input field entered value",
+          "text_slots": {
+            "value": {
+              "font_size_px": 16,
+              "font_weight": "Regular",
+              "available_width_px": 280,
+              "max_chars_cn": 17,
+              "max_chars_en": 31,
+              "max_lines": 1,
+              "truncation": "none",
+              "source": "derived",
+              "derivation": "280/16=17.5 -> 17 CN; 280/8.8=31.8 -> 31 EN"
+            }
+          }
+        },
+        "error_message": {
+          "description": "Error message below input field",
+          "text_slots": {
+            "error": {
+              "font_size_px": 12,
+              "font_weight": "Regular",
+              "available_width_px": 343,
+              "max_chars_cn": 28,
+              "max_chars_en": 52,
+              "max_lines": 2,
+              "truncation": "none",
+              "wrap": true,
+              "source": "derived",
+              "derivation": "343/12=28.6 -> 28 CN per line; 343/6.6=52 -> 52 EN per line; 2 lines = 56 CN / 104 EN",
+              "example": "The password is incorrect. Please enter it again. (50 chars)"
+            }
+          }
+        },
+        "helper_text": {
+          "description": "Helper/hint text below input field",
+          "text_slots": {
+            "helper": {
+              "font_size_px": 12,
+              "font_weight": "Regular",
+              "available_width_px": 343,
+              "max_chars_cn": 28,
+              "max_chars_en": 52,
+              "max_lines": 2,
+              "truncation": "none",
+              "wrap": true,
+              "source": "derived",
+              "derivation": "Same as error_message",
+              "example": "The verification code will expire in 30S (41 chars)"
+            }
+          }
+        }
+      }
+    },
+    "search_box": {
+      "category": "Input",
+      "section": "5.5",
+      "variants": {
+        "placeholder": {
+          "text_slots": {
+            "placeholder": {
+              "font_size_px": 14,
+              "available_width_px": 250,
+              "max_chars_cn": 17,
+              "max_chars_en": 32,
+              "max_lines": 1,
+              "truncation": "ellipsis",
+              "source": "derived",
+              "derivation": "343 - 24(search icon) - 8(gap) - 24(clear icon) - 8(gap) - 29(history icon) = 250; 250/14=17.9 -> 17 CN; 250/7.7=32.5 -> 32 EN",
+              "example": "Service (7)"
+            }
+          }
+        },
+        "query_text": {
+          "text_slots": {
+            "query": {
+              "font_size_px": 16,
+              "available_width_px": 280,
+              "max_chars_cn": 17,
+              "max_chars_en": 31,
+              "source": "derived",
+              "derivation": "Similar to input value; 280/16=17.5 -> 17 CN"
+            }
+          }
+        },
+        "tag_chip": {
+          "text_slots": {
+            "label": {
+              "font_size_px": 12,
+              "available_width_px": 120,
+              "max_chars_cn": 10,
+              "max_chars_en": 18,
+              "max_lines": 1,
+              "truncation": "ellipsis",
+              "source": "derived",
+              "derivation": "Tag chip max ~120px including 8px padding each side = 104px text; 104/12=8.7 -> 8 CN; 104/6.6=15.8 -> 15 EN (conservative 10/18)",
+              "example": "Savings Account (15), James Smith (11), Wealth (6)"
+            }
+          }
+        }
+      }
+    },
+    "selection_list": {
+      "category": "Input",
+      "section": "5.2",
+      "variants": {
+        "label": {
+          "text_slots": {
+            "label": {
+              "font_size_px": 12,
+              "available_width_px": 343,
+              "max_chars_cn": 28,
+              "max_chars_en": 52,
+              "source": "derived",
+              "derivation": "Same as input label"
+            }
+          }
+        },
+        "selected_value_single_line": {
+          "text_slots": {
+            "value": {
+              "font_size_px": 16,
+              "available_width_px": 279,
+              "max_chars_cn": 17,
+              "max_chars_en": 31,
+              "max_lines": 1,
+              "truncation": "ellipsis",
+              "source": "derived",
+              "derivation": "343 - 32(icon) - 8(gap) - 24(chevron) = 279; 279/16=17.4 -> 17 CN; 279/8.8=31.7 -> 31 EN"
+            }
+          }
+        },
+        "selected_value_multi_line": {
+          "text_slots": {
+            "value": {
+              "font_size_px": 16,
+              "available_width_px": 279,
+              "max_chars_cn": 34,
+              "max_chars_en": 62,
+              "max_lines": 2,
+              "truncation": "ellipsis",
+              "wrap": true,
+              "source": "derived",
+              "derivation": "2 lines * 17 CN = 34; 2 lines * 31 EN = 62"
+            }
+          }
+        },
+        "description_text": {
+          "text_slots": {
+            "description": {
+              "font_size_px": 12,
+              "available_width_px": 343,
+              "max_chars_cn": 28,
+              "max_chars_en": 52,
+              "max_lines": 2,
+              "source": "derived",
+              "derivation": "Same as helper text"
+            }
+          }
+        }
+      }
+    },
+    "radio_checkbox": {
+      "category": "Input",
+      "section": "5.3 / 5.4",
+      "variants": {
+        "item_label": {
+          "description": "Radio/checkbox item label (single line)",
+          "text_slots": {
+            "label": {
+              "font_size_px": 16,
+              "font_weight": "Regular",
+              "available_width_px": 321,
+              "max_chars_cn": 20,
+              "max_chars_en": 36,
+              "max_lines": 1,
+              "truncation": "ellipsis",
+              "source": "derived",
+              "derivation": "343 - 16(checkbox) - 6(gap) = 321; 321/16=20.1 -> 20 CN; 321/8.8=36.5 -> 36 EN",
+              "example": "Items (5), Agree to the Terms (18)"
+            }
+          }
+        },
+        "item_title": {
+          "description": "Radio/checkbox title in two-line variant",
+          "text_slots": {
+            "title": {
+              "font_size_px": 16,
+              "available_width_px": 321,
+              "max_chars_cn": 20,
+              "max_chars_en": 36,
+              "max_lines": 1,
+              "source": "derived",
+              "derivation": "Same as item_label"
+            }
+          }
+        },
+        "item_description": {
+          "description": "Radio/checkbox description text below title",
+          "text_slots": {
+            "description": {
+              "font_size_px": 12,
+              "available_width_px": 321,
+              "max_chars_cn": 26,
+              "max_chars_en": 48,
+              "max_lines": 2,
+              "source": "derived",
+              "derivation": "321/12=26.75 -> 26 CN per line; 321/6.6=48.6 -> 48 EN per line"
+            }
+          }
+        }
+      }
+    },
+    "selector": {
+      "category": "Input",
+      "section": "5.6",
+      "variants": {
+        "action_sheet_option": {
+          "description": "Action sheet selector option",
+          "text_slots": {
+            "option": {
+              "font_size_px": 16,
+              "available_width_px": 343,
+              "max_chars_cn": 21,
+              "max_chars_en": 39,
+              "max_lines": 1,
+              "truncation": "ellipsis",
+              "source": "derived",
+              "derivation": "343/16=21.4 -> 21 CN; 343/8.8=39 -> 39 EN",
+              "example": "Camera (6), Select from Local (18)"
+            }
+          }
+        },
+        "scroll_picker_option": {
+          "description": "Scroll picker option",
+          "text_slots": {
+            "option": {
+              "font_size_px": 16,
+              "available_width_px": 200,
+              "max_chars_cn": 12,
+              "max_chars_en": 22,
+              "max_lines": 1,
+              "truncation": "ellipsis",
+              "source": "derived",
+              "derivation": "Picker column width ~200px; 200/16=12.5 -> 12 CN; 200/8.8=22.7 -> 22 EN",
+              "example": "Suzhou City (11), Shanghai City (13)"
+            }
+          }
+        },
+        "cancel_button": {
+          "text_slots": {
+            "label": {
+              "font_size_px": 16,
+              "available_width_px": 343,
+              "max_chars_cn": 21,
+              "max_chars_en": 39,
+              "source": "derived",
+              "derivation": "Full width button; 343/16=21.4 -> 21 CN"
+            }
+          }
+        },
+        "confirm_button": {
+          "text_slots": {
+            "label": {
+              "font_size_px": 16,
+              "available_width_px": 160,
+              "max_chars_cn": 10,
+              "max_chars_en": 18,
+              "source": "derived",
+              "derivation": "Half-width confirm button ~160px; 160/16=10 -> 10 CN; 160/8.8=18.2 -> 18 EN"
+            }
+          }
+        }
+      }
+    },
+    "cascading_selector": {
+      "category": "Input",
+      "section": "5.7",
+      "variants": {
+        "level_option": {
+          "text_slots": {
+            "option": {
+              "font_size_px": 16,
+              "available_width_px": 160,
+              "max_chars_cn": 10,
+              "max_chars_en": 18,
+              "max_lines": 1,
+              "truncation": "ellipsis",
+              "source": "derived",
+              "derivation": "Two-level cascading, each level ~160px; 160/16=10 CN; 160/8.8=18 EN"
+            }
+          }
+        }
+      }
+    },
+    "card": {
+      "category": "Display",
+      "section": "6.1",
+      "variants": {
+        "header_title": {
+          "description": "Card header title (single line)",
+          "text_slots": {
+            "title": {
+              "font_size_px": 16,
+              "font_weight": "Medium",
+              "available_width_px": 311,
+              "max_chars_cn": 19,
+              "max_chars_en": 35,
+              "max_lines": 1,
+              "truncation": "ellipsis",
+              "source": "derived",
+              "derivation": "343 - 2*16 card padding = 311; 311/16=19.4 -> 19 CN; 311/8.8=35.3 -> 35 EN",
+              "example": "Demand Deposit Accounts (22), Total Wealth Assets (18)"
+            }
+          }
+        },
+        "header_subtitle": {
+          "text_slots": {
+            "subtitle": {
+              "font_size_px": 12,
+              "available_width_px": 311,
+              "max_chars_cn": 25,
+              "max_chars_en": 47,
+              "max_lines": 1,
+              "truncation": "ellipsis",
+              "source": "derived",
+              "derivation": "311/12=25.9 -> 25 CN; 311/6.6=47.1 -> 47 EN",
+              "example": "5 accounts (9), Last update 2025-05-26 16:06:27 (32)"
+            }
+          }
+        },
+        "amount_primary": {
+          "description": "Primary amount/value in card header",
+          "text_slots": {
+            "amount": {
+              "font_size_px": 24,
+              "font_weight": "Bold",
+              "available_width_px": 311,
+              "max_chars_cn": 12,
+              "max_chars_en": 23,
+              "max_lines": 1,
+              "truncation": "none",
+              "source": "derived",
+              "derivation": "311/24=12.9 -> 12 CN; 311/13.2=23.6 -> 23 EN",
+              "example": "$1,608,789.00 (13)"
+            }
+          }
+        },
+        "amount_secondary": {
+          "text_slots": {
+            "amount": {
+              "font_size_px": 16,
+              "font_weight": "Bold",
+              "available_width_px": 200,
+              "max_chars_cn": 12,
+              "max_chars_en": 22,
+              "source": "derived",
+              "derivation": "200/16=12.5 -> 12 CN; 200/8.8=22.7 -> 22 EN"
+            }
+          }
+        },
+        "body_list_item_title": {
+          "text_slots": {
+            "title": {
+              "font_size_px": 16,
+              "available_width_px": 231,
+              "max_chars_cn": 14,
+              "max_chars_en": 26,
+              "max_lines": 1,
+              "truncation": "ellipsis",
+              "source": "derived",
+              "derivation": "311 - 32(icon) - 8(gap) - 8(gap) - 32(trailing) = 231; 231/16=14.4 -> 14 CN; 231/8.8=26.3 -> 26 EN",
+              "example": "Term Deposit (13), Funds (5), Bonds (5)"
+            }
+          }
+        },
+        "body_list_item_subtitle": {
+          "text_slots": {
+            "subtitle": {
+              "font_size_px": 12,
+              "available_width_px": 231,
+              "max_chars_cn": 19,
+              "max_chars_en": 35,
+              "max_lines": 1,
+              "truncation": "ellipsis",
+              "source": "derived",
+              "derivation": "231/12=19.25 -> 19 CN; 231/6.6=35 -> 35 EN"
+            }
+          }
+        },
+        "function_grid_label": {
+          "description": "Function card icon grid label",
+          "text_slots": {
+            "label": {
+              "font_size_px": 12,
+              "available_width_px": 75,
+              "max_chars_cn": 6,
+              "max_chars_en": 11,
+              "max_lines": 2,
+              "truncation": "ellipsis",
+              "wrap": true,
+              "source": "derived",
+              "derivation": "4-column grid: 311/4=77.75px per cell; 77/12=6.4 -> 6 CN; 77/6.6=11.7 -> 11 EN; 2 lines = 12 CN / 22 EN",
+              "example": "Overseas Transfer (17 -> 2 lines)"
+            }
+          }
+        },
+        "view_all_link": {
+          "text_slots": {
+            "link": {
+              "font_size_px": 14,
+              "available_width_px": 80,
+              "max_chars_cn": 5,
+              "max_chars_en": 10,
+              "max_lines": 1,
+              "source": "derived",
+              "derivation": "80/14=5.7 -> 5 CN; 80/7.7=10.4 -> 10 EN",
+              "example": "View All (8)"
+            }
+          }
+        }
+      }
+    },
+    "list": {
+      "category": "Display",
+      "section": "6.2",
+      "variants": {
+        "header_title": {
+          "text_slots": {
+            "title": {
+              "font_size_px": 16,
+              "font_weight": "Medium",
+              "available_width_px": 251,
+              "max_chars_cn": 15,
+              "max_chars_en": 28,
+              "max_lines": 1,
+              "truncation": "ellipsis",
+              "source": "derived",
+              "derivation": "311 - 60(View All link) = 251; 251/16=15.7 -> 15 CN; 251/8.8=28.5 -> 28 EN",
+              "example": "Transaction History (18), Investment Record (17)"
+            }
+          }
+        },
+        "row_title_single_line": {
+          "text_slots": {
+            "title": {
+              "font_size_px": 16,
+              "available_width_px": 231,
+              "max_chars_cn": 14,
+              "max_chars_en": 26,
+              "max_lines": 1,
+              "truncation": "ellipsis",
+              "source": "derived",
+              "derivation": "311 - 32(icon) - 8 - 8 - 32(trailing) = 231; 231/16=14.4 -> 14 CN",
+              "example": "Helen Douglas (13)"
+            }
+          }
+        },
+        "row_title_two_lines": {
+          "text_slots": {
+            "title": {
+              "font_size_px": 16,
+              "available_width_px": 231,
+              "max_chars_cn": 28,
+              "max_chars_en": 52,
+              "max_lines": 2,
+              "truncation": "ellipsis",
+              "wrap": true,
+              "source": "derived",
+              "derivation": "2 * 14 CN = 28; 2 * 26 EN = 52",
+              "example": "Place a Time Deposit: ONLINE REWARD-PLUS TIME DEPOSIT (52)"
+            }
+          }
+        },
+        "row_subtitle": {
+          "text_slots": {
+            "subtitle": {
+              "font_size_px": 12,
+              "available_width_px": 231,
+              "max_chars_cn": 19,
+              "max_chars_en": 35,
+              "max_lines": 1,
+              "truncation": "ellipsis",
+              "source": "derived",
+              "derivation": "231/12=19.25 -> 19 CN; 231/6.6=35 -> 35 EN",
+              "example": "Transfer from XXX (17), Card 1324 CNY (13)"
+            }
+          }
+        },
+        "row_amount": {
+          "text_slots": {
+            "amount": {
+              "font_size_px": 16,
+              "font_weight": "Bold",
+              "available_width_px": 120,
+              "max_chars_cn": 7,
+              "max_chars_en": 13,
+              "max_lines": 1,
+              "truncation": "none",
+              "source": "derived",
+              "derivation": "120/16=7.5 -> 7 CN; 120/8.8=13.6 -> 13 EN",
+              "example": "-$8,789.00 (10), $50,000.00 (11)"
+            }
+          }
+        },
+        "confirmation_label": {
+          "text_slots": {
+            "label": {
+              "font_size_px": 14,
+              "available_width_px": 155,
+              "max_chars_cn": 11,
+              "max_chars_en": 20,
+              "max_lines": 2,
+              "truncation": "none",
+              "wrap": true,
+              "source": "derived",
+              "derivation": "311/2=155.5 per column; 155/14=11.1 -> 11 CN per line; 155/7.7=20.1 -> 20 EN per line",
+              "example": "Transfer Fee and Intermediary Bank Charges (42 -> 2 lines)"
+            }
+          }
+        },
+        "confirmation_value": {
+          "text_slots": {
+            "value": {
+              "font_size_px": 14,
+              "available_width_px": 155,
+              "max_chars_cn": 11,
+              "max_chars_en": 20,
+              "max_lines": 1,
+              "truncation": "ellipsis",
+              "source": "derived",
+              "derivation": "155/14=11.1 -> 11 CN; 155/7.7=20.1 -> 20 EN",
+              "example": "50,000.00 HKD (13), Paid by recipient (17)"
+            }
+          }
+        },
+        "footer_note": {
+          "text_slots": {
+            "note": {
+              "font_size_px": 12,
+              "available_width_px": 311,
+              "max_chars_cn": 25,
+              "max_chars_en": 47,
+              "max_lines": 3,
+              "wrap": true,
+              "source": "derived",
+              "derivation": "311/12=25.9 -> 25 CN per line; 311/6.6=47.1 -> 47 EN per line; 3 lines max"
+            }
+          }
+        }
+      }
+    },
+    "tag": {
+      "category": "Display",
+      "section": "6.3",
+      "variants": {
+        "tag_text": {
+          "description": "Tag/chip text label",
+          "text_slots": {
+            "label": {
+              "font_size_px": 12,
+              "font_weight": "Regular",
+              "available_width_px": 104,
+              "max_chars_cn": 8,
+              "max_chars_en": 15,
+              "max_lines": 1,
+              "truncation": "ellipsis",
+              "source": "derived",
+              "derivation": "Max tag width ~120px - 2*8 padding = 104px; 104/12=8.7 -> 8 CN; 104/6.6=15.8 -> 15 EN",
+              "example": "品牌主色 (4), Success (7), Warning (7), From 1,000.00HKD (16 -> exceeds, use larger tag)"
+            }
+          }
+        },
+        "tag_text_wide": {
+          "description": "Wide tag variant for longer text (e.g., financial product tags)",
+          "text_slots": {
+            "label": {
+              "font_size_px": 12,
+              "available_width_px": 144,
+              "max_chars_cn": 12,
+              "max_chars_en": 21,
+              "source": "derived",
+              "derivation": "Wide tag max ~160px - 16 padding = 144; 144/12=12 CN; 144/6.6=21.8 -> 21 EN"
+            }
+          }
+        }
+      }
+    },
+    "badge": {
+      "category": "Feedback",
+      "section": "7.1",
+      "variants": {
+        "numeric": {
+          "text_slots": {
+            "number": {
+              "font_size_px": 10,
+              "available_width_px": 30,
+              "max_chars_cn": 3,
+              "max_chars_en": 5,
+              "max_lines": 1,
+              "truncation": "none",
+              "source": "explicit+derived",
+              "derivation": "Badge max display: 99+ (3 chars) or 999+ (4 chars); overflow format is fixed",
+              "example": "99+, 999+"
+            }
+          }
+        },
+        "text_label": {
+          "text_slots": {
+            "label": {
+              "font_size_px": 10,
+              "available_width_px": 40,
+              "max_chars_cn": 4,
+              "max_chars_en": 7,
+              "source": "derived",
+              "derivation": "Capsule badge ~40px text area; 40/10=4 CN; 40/5.5=7.3 -> 7 EN",
+              "example": "NEW (3)"
+            }
+          }
+        }
+      }
+    },
+    "toast": {
+      "category": "Feedback",
+      "section": "7.2",
+      "variants": {
+        "plain_text": {
+          "text_slots": {
+            "message": {
+              "font_size_px": 14,
+              "available_width_px": 279,
+              "max_chars_cn": 14,
+              "max_chars_en": 25,
+              "max_lines": 2,
+              "truncation": "none",
+              "source": "explicit",
+              "derivation": "EXPLICIT LIMIT: <=14 CN chars. EN equivalent: 14*14/7.7=25.5 -> 25 EN chars",
+              "design_system_rule": "Plain text toast: max 14 Chinese characters",
+              "example": "Content (7)"
+            }
+          }
+        },
+        "image_text_success": {
+          "text_slots": {
+            "message": {
+              "font_size_px": 14,
+              "max_chars_cn": 10,
+              "max_chars_en": 18,
+              "max_lines": 2,
+              "source": "explicit",
+              "derivation": "EXPLICIT LIMIT: 4-6 typical, max 10 CN chars. EN: 10*14/7.7=18.2 -> 18",
+              "design_system_rule": "Image+text toast: 4-6 chars typical, max 10 Chinese characters",
+              "example": "保存成功 (4), Saved successfully (18)"
+            }
+          }
+        },
+        "image_text_tip": {
+          "text_slots": {
+            "message": {
+              "font_size_px": 14,
+              "max_chars_cn": 10,
+              "max_chars_en": 18,
+              "source": "explicit",
+              "derivation": "Same as success; first char should be '请' (please) in CN",
+              "example": "请勾选协议 (5), Please check the agreement (26 -> exceeds, trim)"
+            }
+          }
+        },
+        "image_text_failure": {
+          "text_slots": {
+            "message": {
+              "font_size_px": 14,
+              "max_chars_cn": 10,
+              "max_chars_en": 18,
+              "source": "explicit",
+              "derivation": "Same as success",
+              "example": "密码错误 (4), Incorrect password (18)"
+            }
+          }
+        }
+      }
+    },
+    "dialog": {
+      "category": "Feedback",
+      "section": "7.3 / 7.4",
+      "variants": {
+        "version_update_title": {
+          "text_slots": {
+            "title": {
+              "font_size_px": 18,
+              "available_width_px": 279,
+              "max_chars_cn": 15,
+              "max_chars_en": 28,
+              "max_lines": 1,
+              "truncation": "ellipsis",
+              "source": "derived",
+              "derivation": "Dialog width ~327px - 2*24 padding = 279; 279/18=15.5 -> 15 CN; 279/9.9=28.2 -> 28 EN",
+              "example": "New version (11), Updating... Please wait (34%) (29)"
+            }
+          }
+        },
+        "version_update_body": {
+          "text_slots": {
+            "body_text": {
+              "font_size_px": 14,
+              "available_width_px": 279,
+              "max_chars_cn": 19,
+              "max_chars_en": 36,
+              "max_lines": 5,
+              "wrap": true,
+              "source": "derived",
+              "derivation": "279/14=19.9 -> 19 CN per line; 279/7.7=36.2 -> 36 EN per line; max 5 bullet items"
+            }
+          }
+        },
+        "version_update_bullet": {
+          "text_slots": {
+            "bullet": {
+              "font_size_px": 14,
+              "available_width_px": 250,
+              "max_chars_cn": 17,
+              "max_chars_en": 32,
+              "max_lines": 1,
+              "truncation": "ellipsis",
+              "source": "derived",
+              "derivation": "279 - 29(bullet indent) = 250; 250/14=17.9 -> 17 CN; 250/7.7=32.5 -> 32 EN",
+              "example": "New Additions (13)"
+            }
+          }
+        },
+        "regular_popup_title": {
+          "text_slots": {
+            "title": {
+              "font_size_px": 14,
+              "font_weight": "Medium",
+              "available_width_px": 295,
+              "max_chars_cn": 21,
+              "max_chars_en": 38,
+              "max_lines": 2,
+              "wrap": true,
+              "source": "derived",
+              "derivation": "Dialog width ~327px - 2*16 padding = 295; 295/14=21.1 -> 21 CN per line; 295/7.7=38.3 -> 38 EN per line",
+              "example": "待生效记录已存在 (8), The record pending validation already exists (44 -> 2 lines)"
+            }
+          }
+        },
+        "regular_popup_description": {
+          "text_slots": {
+            "description": {
+              "font_size_px": 14,
+              "font_weight": "Regular",
+              "line_height": 1.4,
+              "available_width_px": 295,
+              "max_chars_cn": 21,
+              "max_chars_en": 38,
+              "max_lines": 5,
+              "wrap": true,
+              "source": "derived",
+              "derivation": "Same as title width; 295/14=21 CN per line; 5 lines = 105 CN / 190 EN total"
+            }
+          }
+        },
+        "dialog_button_full": {
+          "text_slots": {
+            "label": {
+              "font_size_px": 14,
+              "available_width_px": 263,
+              "max_chars_cn": 18,
+              "max_chars_en": 34,
+              "max_lines": 1,
+              "source": "derived",
+              "derivation": "295 - 2*16 button padding = 263; 263/14=18.8 -> 18 CN; 263/7.7=34.2 -> 34 EN",
+              "example": "Update Now (10), Cancel Update (13), Confirm (7)"
+            }
+          }
+        },
+        "dialog_button_split": {
+          "text_slots": {
+            "label": {
+              "font_size_px": 14,
+              "available_width_px": 123,
+              "max_chars_cn": 8,
+              "max_chars_en": 16,
+              "max_lines": 1,
+              "source": "derived",
+              "derivation": "(295-8 gap)/2 = 143.5; 143.5 - 2*16 = 111.5; 111.5/14=7.96 -> 8 CN (conservative); 111.5/7.7=14.5 -> 16 EN (conservative)",
+              "example": "Cancel (6), Update (6)"
+            }
+          }
+        }
+      }
+    },
+    "results_page": {
+      "category": "Feedback",
+      "section": "7.5",
+      "variants": {
+        "main_description": {
+          "text_slots": {
+            "description": {
+              "font_size_px": 18,
+              "font_weight": "Medium",
+              "available_width_px": 343,
+              "max_chars_cn": 19,
+              "max_chars_en": 34,
+              "max_lines": 2,
+              "truncation": "none",
+              "wrap": true,
+              "source": "derived",
+              "derivation": "343/18=19 -> 19 CN per line; 343/9.9=34.6 -> 34 EN per line",
+              "example": "Submitted successfully (22)"
+            }
+          }
+        },
+        "additional_description": {
+          "text_slots": {
+            "description": {
+              "font_size_px": 14,
+              "available_width_px": 343,
+              "max_chars_cn": 24,
+              "max_chars_en": 44,
+              "max_lines": 3,
+              "wrap": true,
+              "source": "derived",
+              "derivation": "343/14=24.5 -> 24 CN per line; 343/7.7=44.5 -> 44 EN per line; 3 lines max"
+            }
+          }
+        },
+        "action_button": {
+          "text_slots": {
+            "label": {
+              "font_size_px": 16,
+              "available_width_px": 140,
+              "max_chars_cn": 8,
+              "max_chars_en": 15,
+              "max_lines": 1,
+              "source": "derived",
+              "derivation": "3 buttons in row: 343/3=114.3 - 2*16 padding = 82.3; But split may be uneven. Conservative: 140px per button; 140/16=8.75 -> 8 CN; 140/8.8=15.9 -> 15 EN",
+              "example": "DONE (4), Another Remittance (18), Remittance Details (18)"
+            }
+          }
+        }
+      }
+    },
+    "collapsible_panel": {
+      "category": "Display",
+      "section": "6.5",
+      "variants": {
+        "panel_title": {
+          "text_slots": {
+            "title": {
+              "font_size_px": 16,
+              "available_width_px": 295,
+              "max_chars_cn": 18,
+              "max_chars_en": 33,
+              "max_lines": 1,
+              "truncation": "ellipsis",
+              "source": "derived",
+              "derivation": "311 - 16(expand icon) = 295; 295/16=18.4 -> 18 CN; 295/8.8=33.5 -> 33 EN",
+              "example": "Search History (13)"
+            }
+          }
+        },
+        "panel_content": {
+          "text_slots": {
+            "content": {
+              "font_size_px": 14,
+              "available_width_px": 311,
+              "max_chars_cn": 22,
+              "max_chars_en": 40,
+              "max_lines": 10,
+              "wrap": true,
+              "source": "derived",
+              "derivation": "311/14=22.2 -> 22 CN per line; 311/7.7=40.4 -> 40 EN per line"
+            }
+          }
+        }
+      }
+    },
+    "carousel": {
+      "category": "Display",
+      "section": "6.4",
+      "variants": {
+        "slide_text": {
+          "text_slots": {
+            "text": {
+              "font_size_px": 14,
+              "available_width_px": 311,
+              "max_chars_cn": 22,
+              "max_chars_en": 40,
+              "max_lines": 3,
+              "wrap": true,
+              "source": "derived",
+              "derivation": "Full card width; 311/14=22.2 -> 22 CN per line"
+            }
+          }
+        }
+      }
+    },
+    "business_menu": {
+      "category": "Interaction",
+      "section": "8.9",
+      "variants": {
+        "menu_item_title": {
+          "text_slots": {
+            "title": {
+              "font_size_px": 16,
+              "font_weight": "Medium",
+              "available_width_px": 287,
+              "max_chars_cn": 17,
+              "max_chars_en": 32,
+              "max_lines": 1,
+              "truncation": "ellipsis",
+              "source": "derived",
+              "derivation": "343 - 16(icon) - 8(gap) - 32(trailing) = 287; 287/16=17.9 -> 17 CN; 287/8.8=32.6 -> 32 EN",
+              "example": "Transfer (8), Transaction History (18), Asset Overview (15)"
+            }
+          }
+        },
+        "menu_item_description": {
+          "text_slots": {
+            "description": {
+              "font_size_px": 12,
+              "available_width_px": 287,
+              "max_chars_cn": 23,
+              "max_chars_en": 43,
+              "max_lines": 2,
+              "truncation": "ellipsis",
+              "wrap": true,
+              "source": "derived",
+              "derivation": "287/12=23.9 -> 23 CN per line; 287/6.6=43.5 -> 43 EN per line",
+              "example": "Quick & easy. Arrives in 10s. (29), Track every cent. All transactions, crystal clear. (48)"
+            }
+          }
+        }
+      }
+    },
+    "conversation": {
+      "category": "Interaction",
+      "section": "8.10 / 8.11 / 8.12",
+      "variants": {
+        "thinking_indicator": {
+          "text_slots": {
+            "text": {
+              "font_size_px": 14,
+              "font_weight": "500",
+              "available_width_px": 200,
+              "max_chars_cn": 14,
+              "max_chars_en": 25,
+              "max_lines": 1,
+              "source": "derived",
+              "derivation": "Thinking bubble width ~200px; 200/14=14.3 -> 14 CN; 200/7.7=25.9 -> 25 EN",
+              "example": "Thinking... (11)"
+            }
+          }
+        },
+        "ai_response": {
+          "text_slots": {
+            "message": {
+              "font_size_px": 14,
+              "available_width_px": 311,
+              "max_chars_cn": 22,
+              "max_chars_en": 40,
+              "max_lines": 20,
+              "wrap": true,
+              "source": "derived",
+              "derivation": "Full card width; 311/14=22.2 -> 22 CN per line; long-form text, up to 20 lines"
+            }
+          }
+        },
+        "recommended_command": {
+          "text_slots": {
+            "command": {
+              "font_size_px": 12,
+              "font_weight": "500",
+              "available_width_px": 311,
+              "max_chars_cn": 25,
+              "max_chars_en": 47,
+              "max_lines": 2,
+              "max_items": 3,
+              "truncation": "ellipsis",
+              "wrap": true,
+              "source": "derived+explicit",
+              "derivation": "EXPLICIT RULE: max 3 commands, no repetition. 311/12=25.9 -> 25 CN per line; 311/6.6=47.1 -> 47 EN per line",
+              "design_system_rule": "Maximum 3 recommended commands, no repetition with previous questions"
+            }
+          }
+        },
+        "action_button_in_chat": {
+          "text_slots": {
+            "label": {
+              "font_size_px": 14,
+              "available_width_px": 150,
+              "max_chars_cn": 10,
+              "max_chars_en": 19,
+              "max_lines": 1,
+              "source": "derived",
+              "derivation": "Chat action button ~150px; 150/14=10.7 -> 10 CN; 150/7.7=19.5 -> 19 EN",
+              "example": "View Transaction Details (23 -> exceeds, needs 2 buttons or wider)"
+            }
+          }
+        }
+      }
+    },
+    "loading": {
+      "category": "Interaction",
+      "section": "8.1",
+      "variants": {
+        "countdown_text": {
+          "text_slots": {
+            "message": {
+              "font_size_px": 14,
+              "available_width_px": 311,
+              "max_chars_cn": 22,
+              "max_chars_en": 40,
+              "max_lines": 3,
+              "wrap": true,
+              "source": "derived+explicit",
+              "derivation": "EXPLICIT RULE: text word count limited within certain range; countdown max 10s; 311/14=22.2 -> 22 CN per line",
+              "design_system_rule": "Text word count should be limited within a certain character range; countdown animation max 10 seconds",
+              "example": "Waiting for the return result.. (31), Please do not resubmit before the result is returned (52)"
+            }
+          }
+        },
+        "pull_to_refresh_text": {
+          "text_slots": {
+            "message": {
+              "font_size_px": 14,
+              "available_width_px": 200,
+              "max_chars_cn": 14,
+              "max_chars_en": 25,
+              "max_lines": 1,
+              "source": "derived",
+              "derivation": "Refresh prompt width ~200px; 200/14=14.3 -> 14 CN; 200/7.7=25.9 -> 25 EN",
+              "example": "Release to refresh (18)"
+            }
+          }
+        }
+      }
+    },
+    "password_input": {
+      "category": "Business",
+      "section": "9.1",
+      "variants": {
+        "popup_title": {
+          "text_slots": {
+            "title": {
+              "font_size_px": 16,
+              "available_width_px": 295,
+              "max_chars_cn": 18,
+              "max_chars_en": 33,
+              "max_lines": 1,
+              "truncation": "ellipsis",
+              "source": "derived",
+              "derivation": "Popup width ~327 - 2*16 = 295; 295/16=18.4 -> 18 CN; 295/8.8=33.5 -> 33 EN",
+              "example": "Transfer to ZHelen Douglas (29)"
+            }
+          }
+        },
+        "link_text": {
+          "text_slots": {
+            "link": {
+              "font_size_px": 14,
+              "available_width_px": 295,
+              "max_chars_cn": 21,
+              "max_chars_en": 38,
+              "max_lines": 1,
+              "source": "derived",
+              "derivation": "295/14=21.1 -> 21 CN; 295/7.7=38.3 -> 38 EN",
+              "example": "Forgot PIN Password? (20)"
+            }
+          }
+        },
+        "error_message": {
+          "text_slots": {
+            "error": {
+              "font_size_px": 12,
+              "available_width_px": 295,
+              "max_chars_cn": 24,
+              "max_chars_en": 44,
+              "max_lines": 2,
+              "source": "derived",
+              "derivation": "295/12=24.6 -> 24 CN per line; 295/6.6=44.7 -> 44 EN per line",
+              "example": "The password is incorrect. Please enter it again. (50)"
+            }
+          }
+        },
+        "success_message": {
+          "text_slots": {
+            "message": {
+              "font_size_px": 14,
+              "max_chars_cn": 21,
+              "max_chars_en": 38,
+              "source": "derived",
+              "derivation": "Same as popup width; 295/14=21.1 -> 21 CN",
+              "example": "Verification successful (21), Setup successful (16)"
+            }
+          }
+        }
+      }
+    },
+    "sms_verification": {
+      "category": "Business",
+      "section": "9.1",
+      "variants": {
+        "phone_label": {
+          "text_slots": {
+            "label": {
+              "font_size_px": 12,
+              "max_chars_cn": 28,
+              "max_chars_en": 52,
+              "source": "derived",
+              "derivation": "Same as input label"
+            }
+          }
+        },
+        "send_button": {
+          "text_slots": {
+            "label": {
+              "font_size_px": 14,
+              "available_width_px": 80,
+              "max_chars_cn": 5,
+              "max_chars_en": 10,
+              "source": "derived",
+              "derivation": "80/14=5.7 -> 5 CN; 80/7.7=10.4 -> 10 EN",
+              "example": "Send (4), Resend (6)"
+            }
+          }
+        },
+        "timer_text": {
+          "text_slots": {
+            "text": {
+              "font_size_px": 12,
+              "available_width_px": 343,
+              "max_chars_cn": 28,
+              "max_chars_en": 52,
+              "source": "derived",
+              "derivation": "343/12=28.6 -> 28 CN; 343/6.6=52 -> 52 EN",
+              "example": "The verification code will expire in 30s (41)"
+            }
+          }
+        },
+        "consent_text": {
+          "text_slots": {
+            "text": {
+              "font_size_px": 12,
+              "available_width_px": 327,
+              "max_chars_cn": 27,
+              "max_chars_en": 49,
+              "max_lines": 5,
+              "wrap": true,
+              "source": "derived",
+              "derivation": "327/12=27.25 -> 27 CN per line; 327/6.6=49.5 -> 49 EN per line"
+            }
+          }
+        }
+      }
+    },
+    "id_upload": {
+      "category": "Business",
+      "section": "9.2",
+      "variants": {
+        "description": {
+          "text_slots": {
+            "description": {
+              "font_size_px": 14,
+              "available_width_px": 343,
+              "max_chars_cn": 24,
+              "max_chars_en": 44,
+              "max_lines": 3,
+              "wrap": true,
+              "source": "derived",
+              "derivation": "343/14=24.5 -> 24 CN per line; 343/7.7=44.5 -> 44 EN per line",
+              "example": "To ensure a smooth transaction, you need to upload a photo of your ID card. (73 -> 2 lines)"
+            }
+          }
+        },
+        "upload_label": {
+          "text_slots": {
+            "label": {
+              "font_size_px": 14,
+              "available_width_px": 160,
+              "max_chars_cn": 11,
+              "max_chars_en": 20,
+              "max_lines": 2,
+              "wrap": true,
+              "source": "derived",
+              "derivation": "Two upload areas side by side: 343/2=171.5 - padding ~160; 160/14=11.4 -> 11 CN; 160/7.7=20.8 -> 20 EN",
+              "example": "ID Card Front Photo (19), ID Card Back Photo (18)"
+            }
+          }
+        },
+        "quality_criteria": {
+          "text_slots": {
+            "criterion": {
+              "font_size_px": 12,
+              "available_width_px": 80,
+              "max_chars_cn": 6,
+              "max_chars_en": 12,
+              "max_lines": 1,
+              "source": "derived",
+              "derivation": "4 criteria items in row: 343/4=85.75 ~80px text; 80/12=6.7 -> 6 CN; 80/6.6=12.1 -> 12 EN",
+              "example": "Good (4), No cut (6), Not blurry (10), No glare (8)"
+            }
+          }
+        }
+      }
+    },
+    "agreement_confirmation": {
+      "category": "Business",
+      "section": "9.6",
+      "variants": {
+        "checkbox_text": {
+          "text_slots": {
+            "text": {
+              "font_size_px": 14,
+              "available_width_px": 311,
+              "max_chars_cn": 22,
+              "max_chars_en": 40,
+              "max_lines": 3,
+              "wrap": true,
+              "source": "derived",
+              "derivation": "311 - 16(checkbox) - 6(gap) = 289; 289/14=20.6 -> 20 CN (conservative 22); 289/7.7=37.5 -> 40 EN (conservative)",
+              "example": "I Agree to the Terms Agreement Name. (35)"
+            }
+          }
+        },
+        "agreement_content": {
+          "text_slots": {
+            "content": {
+              "font_size_px": 14,
+              "available_width_px": 343,
+              "max_chars_cn": 24,
+              "max_chars_en": 44,
+              "max_lines": 999,
+              "wrap": true,
+              "source": "derived",
+              "derivation": "Full page scrollable; 343/14=24.5 -> 24 CN per line; unlimited lines"
+            }
+          }
+        },
+        "button": {
+          "text_slots": {
+            "label": {
+              "font_size_px": 16,
+              "available_width_px": 311,
+              "max_chars_cn": 19,
+              "max_chars_en": 35,
+              "source": "derived",
+              "derivation": "Full width button; 311/16=19.4 -> 19 CN",
+              "example": "Continue (8), Agree and Confirm (18)"
+            }
+          }
+        }
+      }
+    },
+    "business_card": {
+      "category": "Interaction",
+      "section": "8.8",
+      "variants": {
+        "field_label": {
+          "text_slots": {
+            "label": {
+              "font_size_px": 12,
+              "available_width_px": 155,
+              "max_chars_cn": 12,
+              "max_chars_en": 23,
+              "max_lines": 1,
+              "source": "derived",
+              "derivation": "Two-column layout: 311/2=155.5; 155/12=12.9 -> 12 CN; 155/6.6=23.5 -> 23 EN",
+              "example": "From Account (12), Transfer fees (13), Purpose of Remittance (21 -> exceeds)"
+            }
+          }
+        },
+        "field_value": {
+          "text_slots": {
+            "value": {
+              "font_size_px": 14,
+              "available_width_px": 155,
+              "max_chars_cn": 11,
+              "max_chars_en": 20,
+              "max_lines": 2,
+              "wrap": true,
+              "source": "derived",
+              "derivation": "155/14=11.1 -> 11 CN per line; 155/7.7=20.1 -> 20 EN per line"
+            }
+          }
+        },
+        "status_text": {
+          "text_slots": {
+            "status": {
+              "font_size_px": 16,
+              "available_width_px": 311,
+              "max_chars_cn": 19,
+              "max_chars_en": 35,
+              "source": "derived",
+              "derivation": "311/16=19.4 -> 19 CN; 311/8.8=35.3 -> 35 EN",
+              "example": "Transfer Submitted (17)"
+            }
+          }
+        },
+        "timer_warning": {
+          "text_slots": {
+            "warning": {
+              "font_size_px": 12,
+              "available_width_px": 311,
+              "max_chars_cn": 25,
+              "max_chars_en": 47,
+              "max_lines": 2,
+              "source": "derived",
+              "derivation": "311/12=25.9 -> 25 CN per line",
+              "example": "Please confirm before the timer expires (37)"
+            }
+          }
+        },
+        "safety_notice": {
+          "text_slots": {
+            "notice": {
+              "font_size_px": 12,
+              "available_width_px": 311,
+              "max_chars_cn": 25,
+              "max_chars_en": 47,
+              "max_lines": 3,
+              "wrap": true,
+              "source": "derived",
+              "derivation": "311/12=25.9 -> 25 CN per line",
+              "example": "For the security of your funds, please double-check all details. (56)"
+            }
+          }
+        }
+      }
+    }
+  }
+}

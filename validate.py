@@ -19,6 +19,11 @@ Validates asset integrity before any change is released:
                      golden-case.md / README.md)
                      must resolve to defined assets; "(proposed)" gap IDs
                      must not collide with existing entries
+  6. layout-thresholds.json — DS physical-capacity SSOT: schema, derivation
+                     sanity (recomputed from px math; +/-1 rounding warns,
+                     >=2 blocks), threshold_ref resolution, and the
+                     dual-layer invariant: every guidance budget (EN and SEA)
+                     must fit the tightest mapped DS variant
 
 Exit code 0 = releasable; 1 = blocked (errors). Warnings do not block.
 """
@@ -32,6 +37,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent
 TERMBASE = ROOT / "references" / "termbase.csv"
 RULES = ROOT / "references" / "rules.json"
+THRESHOLDS = ROOT / "references" / "layout-thresholds.json"
 SPEC = ROOT / "references" / "specification.md"
 AUTHORITY_INDEX = ROOT / "references" / "authority-index.md"
 SKILL = ROOT / "SKILL.md"
@@ -84,7 +90,8 @@ COMPONENT_KEY_MAP = {
     "Form Label": "form_label",
     "List Title": "list_title",
     "Page Header": "page_header",
-    "Dialog / Toast": "dialog_toast",
+    "Dialog": "dialog",
+    "Toast": "toast",
 }
 
 EXPECTED_CSV_HEADER = [
@@ -366,6 +373,189 @@ def check_layout_consistency(rules):
             err(f"specification.md layout table missing component '{key}' (defined in rules.json)")
 
 
+DS_SOURCES = {"explicit", "derived", "explicit+derived", "derived+explicit"}
+
+
+def _slot_capacities(s):
+    """Returns (total_en, per_line_en) capacity for a DS slot.
+
+    Honours the export's conventions:
+      - source "explicit"          -> stored values are DS-stated totals
+      - source "derived" / compound -> stored values are per-line; a few
+        multiline variants store line totals instead (detected when the
+        stored value equals per-line math x max_lines and differs from the
+        per-line value itself)
+    """
+    en = s.get("max_chars_en")
+    if not isinstance(en, int) or isinstance(en, bool) or en <= 0:
+        return None, None
+    ml = s.get("max_lines", 1)
+    if not isinstance(ml, int) or isinstance(ml, bool) or ml < 1:
+        ml = 1
+    if s.get("source") == "explicit":
+        return en, en / ml
+    if ml > 1 and en % ml == 0:
+        w, fs = s.get("available_width_px"), s.get("font_size_px")
+        if isinstance(w, int) and isinstance(w, bool) is False and w > 0 \
+                and isinstance(fs, int) and isinstance(fs, bool) is False and fs > 0:
+            per_line_math = int(w // (fs * 0.55))
+            if en == per_line_math * ml and en != per_line_math:
+                return en, en / ml  # totals stored, not per-line
+    return en * ml, en
+
+
+def check_thresholds(rules):
+    """Validates references/layout-thresholds.json (DS physical capacity SSOT).
+
+    Schema, derivation sanity (recomputed from px math), threshold_ref
+    resolution, and the dual-layer invariant: every guidance budget in
+    rules.json layout_constraints must fit the tightest mapped DS variant.
+    Returns (n_components, n_variants, n_slots, version) or None.
+    """
+    if not THRESHOLDS.exists():
+        err("references/layout-thresholds.json is missing")
+        return None
+    try:
+        ds = json.loads(THRESHOLDS.read_text(encoding="utf-8"))
+    except json.JSONDecodeError as e:
+        err(f"layout-thresholds.json is not valid JSON: {e}")
+        return None
+
+    meta = ds.get("metadata")
+    if not isinstance(meta, dict):
+        err("layout-thresholds.json: metadata block is missing")
+        return None
+    for field in ("name", "version", "baseline_device"):
+        if not str(meta.get(field, "")).strip():
+            err(f"layout-thresholds.json metadata: missing '{field}'")
+    bw = meta.get("baseline_width_pt")
+    if not isinstance(bw, int) or isinstance(bw, bool) or bw <= 0:
+        err("layout-thresholds.json metadata: baseline_width_pt must be a positive integer")
+    cm = meta.get("calculation_method")
+    if not isinstance(cm, dict) or any(not str(cm.get(k, "")).strip() for k in ("cjk", "latin", "multiline")):
+        err("layout-thresholds.json metadata: calculation_method must define cjk / latin / multiline")
+    lu = str(meta.get("last_updated", ""))
+    if not re.fullmatch(r"\d{4}-\d{2}-\d{2}", lu):
+        err(f"layout-thresholds.json metadata: invalid last_updated '{lu}' (expected YYYY-MM-DD)")
+    elif datetime.date.fromisoformat(lu) > TODAY:
+        err(f"layout-thresholds.json metadata: last_updated {lu} is in the future")
+
+    comps = ds.get("components")
+    if not isinstance(comps, dict) or not comps:
+        err("layout-thresholds.json: components must be a non-empty object")
+        return None
+
+    n_variants = n_slots = 0
+    slot_index = {}  # "comp.variant" -> text_slots dict
+    for comp, cdata in comps.items():
+        if not isinstance(cdata, dict) or not str(cdata.get("category", "")).strip():
+            err(f"layout-thresholds.json component '{comp}': missing category")
+            continue
+        variants = cdata.get("variants")
+        if not isinstance(variants, dict) or not variants:
+            err(f"layout-thresholds.json component '{comp}': variants must be a non-empty object")
+            continue
+        for var, vdata in variants.items():
+            slots = vdata.get("text_slots") if isinstance(vdata, dict) else None
+            if not isinstance(slots, dict) or not slots:
+                err(f"layout-thresholds.json {comp}.{var}: text_slots must be a non-empty object")
+                continue
+            n_variants += 1
+            slot_index[f"{comp}.{var}"] = slots
+            for slot, s in slots.items():
+                where = f"{comp}.{var}.{slot}"
+                if not isinstance(s, dict):
+                    err(f"layout-thresholds.json {where}: slot must be an object")
+                    continue
+                n_slots += 1
+                fs = s.get("font_size_px")
+                if not isinstance(fs, int) or isinstance(fs, bool) or fs <= 0:
+                    err(f"layout-thresholds.json {where}: font_size_px must be a positive integer")
+                    fs = None
+                for field in ("max_chars_cn", "max_chars_en"):
+                    v = s.get(field)
+                    if not isinstance(v, int) or isinstance(v, bool) or v <= 0:
+                        err(f"layout-thresholds.json {where}: {field} must be a positive integer")
+                src = s.get("source")
+                if src not in DS_SOURCES:
+                    err(f"layout-thresholds.json {where}: unknown source '{src}' "
+                        f"(expected one of {sorted(DS_SOURCES)})")
+                    src = None
+                if not str(s.get("derivation", "")).strip():
+                    err(f"layout-thresholds.json {where}: missing derivation")
+                if "max_lines" in s:
+                    ml = s.get("max_lines")
+                    if not isinstance(ml, int) or isinstance(ml, bool) or ml < 1:
+                        err(f"layout-thresholds.json {where}: max_lines must be an integer >= 1")
+                if "wrap" in s and not isinstance(s.get("wrap"), bool):
+                    err(f"layout-thresholds.json {where}: wrap must be a boolean")
+                if "truncation" in s and not str(s.get("truncation", "")).strip():
+                    err(f"layout-thresholds.json {where}: truncation must be a non-empty string")
+                # Derivation sanity: recompute the floors from px math to
+                # guard against hand-edited numbers. The export itself rounds
+                # +/-1 in a few places (warn); larger contradictions block.
+                if src and src != "explicit" and isinstance(fs, int):
+                    w = s.get("available_width_px")
+                    if not isinstance(w, int) or isinstance(w, bool) or w <= 0:
+                        warn(f"layout-thresholds.json {where}: derived slot lacks available_width_px — "
+                             f"capacity taken at face value")
+                    else:
+                        ml = s.get("max_lines", 1)
+                        ml = ml if isinstance(ml, int) and ml >= 1 else 1
+                        for field, denom in (("max_chars_cn", fs), ("max_chars_en", fs * 0.55)):
+                            stored = s.get(field)
+                            if not isinstance(stored, int):
+                                continue
+                            per_line = int(w // denom)
+                            if stored not in (per_line, per_line * ml):
+                                if abs(stored - per_line) >= 2 and abs(stored - per_line * ml) >= 2:
+                                    err(f"layout-thresholds.json {where}: {field} {stored} contradicts its "
+                                        f"derivation (width {w}px / {denom:.2f} -> {per_line}/line) — never "
+                                        f"hand-edit derived numbers; fix the derivation upstream")
+                                else:
+                                    warn(f"layout-thresholds.json {where}: {field} {stored} differs from "
+                                         f"computed {per_line} by rounding in the DS export")
+
+    # threshold_ref resolution + budget-vs-capacity cross-check
+    for key, c in rules.get("layout_constraints", {}).items():
+        rid = c.get("rule_id", key)
+        refs = c.get("threshold_ref")
+        if not isinstance(refs, list) or not refs \
+                or not all(isinstance(r, str) and r.strip() for r in refs):
+            err(f"rules.json layout '{key}' ({rid}): threshold_ref must be a non-empty list "
+                f"of 'component.variant' paths")
+            continue
+        cap_total = cap_per_line = None
+        binding = None
+        for ref in refs:
+            slots = slot_index.get(ref)
+            if slots is None:
+                err(f"rules.json layout '{key}' ({rid}): threshold_ref '{ref}' "
+                    f"does not resolve in layout-thresholds.json")
+                continue
+            for slot, s in slots.items():
+                total, per_line = _slot_capacities(s)
+                if total is None:
+                    continue
+                if cap_total is None or total < cap_total:
+                    cap_total, binding = total, f"{ref}.{slot}"
+                if cap_per_line is None or per_line < cap_per_line:
+                    cap_per_line = per_line
+        if cap_total is None:
+            continue
+        for field in ("max_en_chars", "max_sea_chars"):
+            b = c.get(field)
+            if isinstance(b, int) and b > cap_total:
+                err(f"rules.json layout '{key}' ({rid}): {field} {b} exceeds DS physical capacity "
+                    f"{cap_total} (binding: {binding}; SEA scripts are Latin-width based and "
+                    f"share the EN capacity)")
+        pl = c.get("max_en_chars_per_line")
+        if isinstance(pl, int) and cap_per_line is not None and pl > cap_per_line:
+            err(f"rules.json layout '{key}' ({rid}): max_en_chars_per_line {pl} exceeds "
+                f"per-line capacity {cap_per_line}")
+    return len(comps), n_variants, n_slots, str(meta.get("version", ""))
+
+
 def check_governance(entries, rules):
     gov = rules.get("governance", {})
     swd = gov.get("stale_warning_days")
@@ -419,8 +609,10 @@ def check_citations(rule_ids, entries):
 def main():
     entries, n_active, n_retired = check_termbase()
     rules, rule_ids = check_rules_json()
+    ds_stats = None
     if rules:
         check_layout_consistency(rules)
+        ds_stats = check_thresholds(rules)
     if entries and rules:
         check_governance(entries, rules)
     check_citations(rule_ids, entries)
@@ -432,6 +624,9 @@ def main():
               f"layout components: {len(rules.get('layout_constraints', {}))}")
         print(f"format rules: {len(rules.get('format_rules', [])) + len(rules.get('format_conventions', []))} · "
               f"metrics: {len(rules.get('metrics', []))}")
+    if ds_stats:
+        print(f"DS thresholds: {ds_stats[0]} components · {ds_stats[1]} variants · "
+              f"{ds_stats[2]} slots (layout-thresholds.json v{ds_stats[3] or '?'})")
     print(f"rule IDs defined: {len(rule_ids)} (R-DEF / R-LAY / R-GEN / R-FMT / R-MET)")
     print()
     if warnings:

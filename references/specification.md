@@ -113,15 +113,24 @@
 
 | 组件类型 | 建议行数 | 英文上限 (Chars) | 东南亚扩展预算 (Chars) | 推荐语法形态 |
 | :--- | :--- | :--- | :--- | :--- |
-| **底部导航 (Tab Bar)** | 单行 | ≤ 10 | ≤ 14 | 单个核心名词 (Accounts, Pay, Cards) |
+| **底部导航 (Tab Bar)** | 单行 | ≤ 10 | ≤ 13 | 单个核心名词 (Accounts, Pay, Cards) |
 | **金刚区宫格 (Grid Tile)** | ≤ 2 行 (单行优先) | ≤ 12 (每行≤6) | ≤ 16 | 精炼动词优先 (Apply, Pay, Transfer) |
 | **主按钮 (Primary CTA)** | 单行 | ≤ 14 | ≤ 20 | 祈使动词短语 (Confirm, Pay Now) |
 | **表单项标签 (Form Label)** | 单行 | ≤ 16 | ≤ 24 | 名词短语 (Account No., Mobile No.) |
-| **卡片/列表标题 (List Title)** | 单行 | ≤ 22 | ≤ 30 | 简练名词短语 (Demand Deposit - HKD) |
-| **页面主标题 (Page Header)** | 单行 | ≤ 24 | ≤ 32 | 完整业务概念 (Card Application) |
-| **弹窗与提示 (Dialog / Toast)**| ≤ 2 行 | ≤ 60 | ≤ 90 | 规范主谓宾语句，占位符规范 |
+| **卡片/列表标题 (List Title)** | 单行 | ≤ 22 | ≤ 26 | 简练名词短语 (Demand Deposit - HKD) |
+| **页面主标题 (Page Header)** | 单行 | ≤ 24 | ≤ 24 | 完整业务概念 (Card Application) |
+| **弹窗 (Dialog)** | ≤ 2 行 | ≤ 60 | ≤ 90 | 规范主谓宾语句，占位符规范 |
+| **轻提示 (Toast)** | ≤ 2 行 | ≤ 25 | ≤ 25 | 完整短句；DS 总量上限 14 CN（图文类 10 CN） |
 
-各组件排版预算的稳定编号 `R-LAY-001` ~ `R-LAY-007`（依上表顺序：Tab Bar → Dialog / Toast）定义于 `rules.json` `layout_constraints` 各键的 `rule_id`，供报告「规则与依据说明」列引用。
+各组件排版预算的稳定编号 `R-LAY-001` ~ `R-LAY-008`（依上表顺序：Tab Bar → Dialog、Toast）定义于 `rules.json` `layout_constraints` 各键的 `rule_id`，供报告「规则与依据说明」列引用。
+
+### 6.2 双层布局预算与 DS 物理容量 (Dual-Layer Budgets & DS Capacity)
+
+上表为**精炼指导层**：回答"好文案应该多长"，服务 REDUNDANCY 判定与 Fix 推荐。物理截断判定以 [`references/layout-thresholds.json`](layout-thresholds.json) 为单一事实源（**物理容量层**：SuperApp 设计系统逐组件变体的 px 级推导，基线 iPhone X/Xs 375pt）。两层协作规则：
+
+- **映射与硬约束**：每个 `layout_constraints` 键通过 `threshold_ref` 声明其覆盖的 DS 组件变体；发布门禁强制校验指导预算（EN 与 SEA）不得超过所映射变体中最紧的物理容量——SEA 语种（马来/印尼/越南语为拉丁字符，泰文组合符零宽折抵）按拉丁宽度基线折算，与 EN 共用同一容量值，杜绝推荐必然截断的文案。
+- **容量口径**：`derived` 变体存每行阈值（总量 = 每行 × `max_lines`，个别变体推导链注明存总量）；`explicit` 变体存 DS 显式总量上限（如 Toast ≤14 CN）。特化变体（对半/三分之一按钮、图文 Toast、4/3 列宫格）不受类预算放宽，判定时直查对应变体阈值。
+- **DS 偏差路由**：App 实际渲染与 DS 容量相悖（容量内仍截断、或超容量未截断）属实现偏差——报告须同时标注 DS 容量与实测截断点两个数值，路由开发排查（字号、间距、容器宽度等），不作为文案缺陷定责；文案精炼建议（`R-GEN-002`）可并行给出，但不构成根因修复。
 
 ---
 
@@ -200,4 +209,4 @@
 度量目标值（如一次通过率达标线）由业务方按发布节奏另行制定，本规范只固化计算口径。
 
 ---
-*版本：v1.3.1 | 维护团队：i18n 术语与界面走查工作组*
+*版本：v1.4.0 | 维护团队：i18n 术语与界面走查工作组*

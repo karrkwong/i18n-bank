@@ -1,5 +1,5 @@
 {
-  "version": "1.3.1",
+  "version": "1.4.0",
   "project": "i18n_BANK",
   "last_updated": "2026-09-18",
   "detection_policy": {
@@ -91,8 +91,13 @@
       "rule_id": "R-LAY-001",
       "max_lines": 1,
       "max_en_chars": 10,
-      "max_sea_chars": 14,
-      "style": "Single core noun"
+      "max_sea_chars": 13,
+      "style": "Single core noun",
+      "threshold_ref": [
+        "bottom_navigation.tab_label",
+        "bottom_navigation.tab_label_4_grid",
+        "bottom_navigation.tab_label_3_grid"
+      ]
     },
     "grid_tile": {
       "rule_id": "R-LAY-002",
@@ -100,42 +105,80 @@
       "max_en_chars": 12,
       "max_en_chars_per_line": 6,
       "max_sea_chars": 16,
-      "style": "Single verb preferred, context omitted"
+      "style": "Single verb preferred, context omitted",
+      "threshold_ref": [
+        "quick_entry.label_5_column",
+        "quick_entry.label_4_column",
+        "quick_entry.label_3_column",
+        "card.function_grid_label"
+      ]
     },
     "primary_button": {
       "rule_id": "R-LAY-003",
       "max_lines": 1,
       "max_en_chars": 14,
       "max_sea_chars": 20,
-      "style": "Imperative verb"
+      "style": "Imperative verb",
+      "threshold_ref": [
+        "button.primary_full_width",
+        "button.secondary_full_width"
+      ]
     },
     "form_label": {
       "rule_id": "R-LAY-004",
       "max_lines": 1,
       "max_en_chars": 16,
       "max_sea_chars": 24,
-      "style": "Noun phrase with trailing colon"
+      "style": "Noun phrase with trailing colon",
+      "threshold_ref": [
+        "input_field.label",
+        "selection_list.label"
+      ]
     },
     "list_title": {
       "rule_id": "R-LAY-005",
       "max_lines": 1,
       "max_en_chars": 22,
-      "max_sea_chars": 30,
-      "style": "Concise noun phrase"
+      "max_sea_chars": 26,
+      "style": "Concise noun phrase",
+      "threshold_ref": [
+        "list.row_title_single_line",
+        "card.body_list_item_title",
+        "list.header_title"
+      ]
     },
     "page_header": {
       "rule_id": "R-LAY-006",
       "max_lines": 1,
       "max_en_chars": 24,
-      "max_sea_chars": 32,
-      "style": "Full business concept permitted"
+      "max_sea_chars": 24,
+      "style": "Full business concept permitted",
+      "threshold_ref": [
+        "secondary_navigation.title_with_icons",
+        "secondary_navigation.title_only"
+      ]
     },
-    "dialog_toast": {
+    "dialog": {
       "rule_id": "R-LAY-007",
       "max_lines": 2,
       "max_en_chars": 60,
       "max_sea_chars": 90,
-      "style": "Complete sentence, standard punctuation, placeholder rules"
+      "style": "Complete sentence, standard punctuation, placeholder rules",
+      "threshold_ref": [
+        "dialog.regular_popup_description",
+        "dialog.version_update_body"
+      ]
+    },
+    "toast": {
+      "rule_id": "R-LAY-008",
+      "max_lines": 2,
+      "max_en_chars": 25,
+      "max_sea_chars": 25,
+      "style": "Complete short sentence",
+      "threshold_ref": [
+        "toast.plain_text"
+      ],
+      "note": "Image-text toast variants carry tighter explicit totals (10 CN / 18 EN) - judge those findings against the specific variant."
     }
   },
   "global_rules": [
